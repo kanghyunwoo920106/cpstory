@@ -6,17 +6,14 @@ import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
-function Write(props) {
+function Add(props) {
   let {
-    datas,
     handleChange,
     onImageChange,
     handleSubmit,
     input,
     fileInput,
     showImages,
-    handleDeleteImage,
-    reset,
     date,
     dateChange,
   } = props;
@@ -76,15 +73,8 @@ function Write(props) {
       <Button type="submit" style={{ width: "100%" }}>
         글등록
       </Button>
-      <Button
-        onClick={reset}
-        type="submit"
-        style={{ width: "100%", marginTop: "5px" }}
-      >
-        초기화
-      </Button>
     </Form>
   );
 }
 
-export default Write;
+export default Add;

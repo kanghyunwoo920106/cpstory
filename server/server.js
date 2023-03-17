@@ -4,15 +4,24 @@ const app = express();
 const router = express.Router();
 const db = require("./database/db_connect");
 const multer = require("multer");
+// const cors = require("cors");
+app.use(express.json());
+// app.use(cors());
 
-app.use(express.static(path.join(__dirname, "/build")));
+// app.use(cors({
+//   origin: ['http://localhost:3000','http://localhost:8000'],
+//   credentials: true,
+//   optionsSuccessStatus: 200
+// }));
 
-app.get("/", function (req, res, next) {
-  res.sendFile(path.join(__dirname, "/build/index.html"));
-});
+// app.use(express.static(path.join(__dirname, "/build")));
+
+// app.get("/", function (req, res, next) {
+//   res.sendFile(path.join(__dirname, "/build/index.html"));
+// });
 
 app.get("/getdata", function (req, res) {
-  db.query("SELECT * FROM data", function (err, data) {
+  db.query("SELECT * FROM data order by startdate DESC", function (err, data) {
     if (!err) {
       res.send({ photodata: data });
     } else {
@@ -24,7 +33,9 @@ app.get("/getdata", function (req, res) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./build/upload/");
+    cb(null, "../client/public/upload/"); //로컬
+    //cb(null, "./build/upload/"); //서버
+
     // cb(null, "./upload/");
   },
   filename: (req, file, cb) => {
@@ -43,6 +54,16 @@ app.post("/insert", upload.array("image"), (req, res) => {
   }
 
   res.send({ state: "200", message: "success" });
+});
+
+app.post("/search", (req, res) => {
+  db.query(
+    `SELECT * FROM data WHERE title LIKE '%${req.body.keyword}%' OR description LIKE '%${req.body.keyword}%'`,
+    (err, data) => {
+      if (!err) res.send({ state: "200", message: "success", data: data });
+      else res.send(err);
+    }
+  );
 });
 
 app.post("/delete", (req, res) => {

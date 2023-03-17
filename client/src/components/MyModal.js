@@ -43,13 +43,23 @@ const MyModal = ({ isOpen, onSubmit, onRequestClose, postCheck }) => {
         }}
       >
         {postCheck == 0 ? (
-          <p style={{ flexGrow: 2 }}>추억이 등록되었습니다.</p>
+          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
+            추억이 등록되었습니다.
+          </p>
         ) : postCheck == 1 ? (
-          <p style={{ flexGrow: 2 }}>등록을 실패했습니다. 다시 등록해주세요</p>
+          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
+            등록을 실패했습니다. 다시 등록해주세요
+          </p>
         ) : postCheck == 2 ? (
-          <p style={{ flexGrow: 2 }}>이미지를 삭제했습니다</p>
+          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
+            이미지를 삭제했습니다.
+          </p>
+        ) : postCheck == 3 ? (
+          <p style={{ flexGrow: 2, lineHeight: "80px" }}>초기화 되었습니다.</p>
         ) : (
-          <p style={{ flexGrow: 2 }}>초기화 되었습니다</p>
+          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
+            찾으시는 추억이 없습니다.
+          </p>
         )}
 
         <Button

@@ -1,14 +1,18 @@
-import logo from "./logo.svg";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { Container } from "react-bootstrap";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import MainSlide from "./components/MainSlide";
 import Write from "./components/Write";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
 import MyModal from "./components/MyModal";
+import List from "./components/List";
+import Footer from "./components/Footer";
+import NotFound from "./components/NotFound";
+import Add from "./components/Add";
+import Main from "./components/Main";
 
 function App() {
   const [datas, setDatas] = useState([]);
@@ -18,6 +22,7 @@ function App() {
   const [isOpen, setOpen] = useState(false);
   const [postCheck, setPostCheck] = useState(0);
   const [show, setShow] = useState(false);
+  const [inputSearch, setInputSearch] = useState("");
   const fileInput = useRef();
 
   const [date, setDate] = useState({
@@ -26,24 +31,28 @@ function App() {
     key: "selection",
   });
 
-  const getPosts = async () => {
-    const posts = await axios.get("/getdata");
-    setDatas(posts.data.photodata);
+  const fetchData = async () => {
+    try {
+      const result = await axios.get("/getdata");
+      setDatas(result.data.photodata);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
-    getPosts();
+    fetchData();
   }, []);
 
   const handleModalSubmit = () => {
     setOpen(false);
-    getPosts();
+    fetchData();
     setShowImages([]);
   };
 
   const handleRequestCancel = () => {
     setOpen(false);
-    getPosts();
+    fetchData();
   };
 
   const handleShow = () => {
@@ -59,16 +68,14 @@ function App() {
     axios
       .delete("/reset")
       .then((result) => {
-        console.log(result);
+        setOpen(true);
+        setPostCheck(3);
+        setShow(false);
+        setInput({ title: "", description: "" });
       })
       .catch((err) => {
         console.log(err);
       });
-    setOpen(true);
-    setPostCheck(3);
-    setShow(false);
-    setInput({ title: "", description: "" });
-    getPosts();
   };
 
   const dateChange = (ranges) => {
@@ -85,7 +92,6 @@ function App() {
       .then((result) => {
         setOpen(true);
         setPostCheck(2);
-        getPosts();
       })
       .catch((err) => {
         console.log(err);
@@ -143,13 +149,6 @@ function App() {
         formData.append("image", image[i]);
       }
 
-      // await axios
-      //   .post("/uploadImage", formData)
-      //   .then((result) => {
-      //     console.log(result);
-      //   })
-      //   .catch((err) => {});
-
       await axios
         .post("/insert", formData)
         .then((result) => {
@@ -159,6 +158,7 @@ function App() {
           setShow(false);
           setShowImages([]);
           fileInput.current.value = "";
+          fetchData();
         })
         .catch((err) => {
           setOpen(true);
@@ -167,23 +167,32 @@ function App() {
     }
   };
 
-  return (
-    <Container>
-      <Header
-        Write={
-          <Write
-            handleChange={handleChange}
-            onImageChange={onImageChange}
-            handleSubmit={handleSubmit}
-            input={input}
-            fileInput={fileInput}
-            showImages={showImages}
-            reset={reset}
-            // handleDeleteImage={handleDeleteImage}
-            date={date}
-            dateChange={dateChange}
-          />
+  const changeSearch = (e) => {
+    setInputSearch(e.target.value);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const keyword = inputSearch;
+
+    axios
+      .post("/search", { keyword: keyword })
+      .then((result) => {
+        if (result.data.data.length == 0) {
+          setOpen(true);
+          setPostCheck(4);
+        } else {
+          setDatas(result.data.data);
         }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  return (
+    <BrowserRouter>
+      <Header
         MyModal={
           <MyModal
             isOpen={isOpen}
@@ -195,9 +204,43 @@ function App() {
         show={show}
         handleShow={handleShow}
         handleHide={handleHide}
+        reset={reset}
       />
-      <MainSlide datas={datas} deleteImgHandle={deleteImgHandle} />
-    </Container>
+      <Container style={{ paddingBottom: "80px" }}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Main
+                datas={datas}
+                deleteImgHandle={deleteImgHandle}
+                changeSearch={changeSearch}
+                handleSearch={handleSearch}
+              />
+            }
+          ></Route>
+          <Route
+            path="/add"
+            element={
+              <Add
+                handleChange={handleChange}
+                onImageChange={onImageChange}
+                handleSubmit={handleSubmit}
+                input={input}
+                fileInput={fileInput}
+                showImages={showImages}
+                // handleDeleteImage={handleDeleteImage}
+                date={date}
+                dateChange={dateChange}
+              />
+            }
+          ></Route>
+          <Route path="/list" element={<List data={datas} />}></Route>
+          <Route path="*" element={<NotFound />}></Route>
+        </Routes>
+      </Container>
+      <Footer />
+    </BrowserRouter>
   );
 }
 
