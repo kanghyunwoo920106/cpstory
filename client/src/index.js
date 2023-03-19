@@ -8,14 +8,17 @@ import store from "./store/store.js";
 import ReactModal from "react-modal";
 import "./styles/main.css";
 import "./styles/reset.css";
+import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
+  // <React.StrictMode>
+  <Provider store={store}>
+    <BrowserRouter>
       <App />
-    </Provider>
-  </React.StrictMode>
+    </BrowserRouter>
+  </Provider>
+  // </React.StrictMode>
 );
 
 ReactModal.setAppElement("#root");

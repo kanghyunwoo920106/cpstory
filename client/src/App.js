@@ -1,10 +1,7 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { Container } from "react-bootstrap";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
-import MainSlide from "./components/MainSlide";
-import Write from "./components/Write";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import MyModal from "./components/MyModal";
@@ -13,6 +10,8 @@ import Footer from "./components/Footer";
 import NotFound from "./components/NotFound";
 import Add from "./components/Add";
 import Main from "./components/Main";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 function App() {
   const [datas, setDatas] = useState([]);
@@ -40,6 +39,13 @@ function App() {
     }
   };
 
+  const location = useLocation();
+
+  const slideTransition = {
+    classNames: "slide",
+    timeout: { enter: 300, exit: 300 },
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -64,7 +70,6 @@ function App() {
   };
 
   const reset = (e) => {
-    e.preventDefault();
     axios
       .delete("/reset")
       .then((result) => {
@@ -132,8 +137,8 @@ function App() {
   //   setImage(showImages.filter((_, index) => index !== id));
   // };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const formData = new FormData();
     if (input.title == "" || input.description == "") {
       setOpen(true);
@@ -145,25 +150,26 @@ function App() {
       formData.append("description", input.description);
       formData.append("startdate", date.startDate.toISOString().split("T")[0]);
       formData.append("enddate", date.endDate.toISOString().split("T")[0]);
+
       for (let i = 0; i < image.length; i++) {
         formData.append("image", image[i]);
       }
 
-      await axios
-        .post("/insert", formData)
-        .then((result) => {
-          setOpen(true);
-          setPostCheck(0);
-          setInput({ title: "", description: "" });
-          setShow(false);
-          setShowImages([]);
+      try {
+        axios.post("/insert", formData);
+        setOpen(true);
+        setPostCheck(0);
+        setInput({ title: "", description: "" });
+        setShow(false);
+        setShowImages([]);
+        if (fileInput && fileInput.current) {
           fileInput.current.value = "";
-          fetchData();
-        })
-        .catch((err) => {
-          setOpen(true);
-          setPostCheck(1);
-        });
+        }
+      } catch (err) {
+        setOpen(true);
+        setPostCheck(1);
+        console.log(err);
+      }
     }
   };
 
@@ -172,7 +178,6 @@ function App() {
   };
 
   const handleSearch = (e) => {
-    e.preventDefault();
     const keyword = inputSearch;
 
     axios
@@ -191,7 +196,7 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
+    <>
       <Header
         MyModal={
           <MyModal
@@ -207,40 +212,49 @@ function App() {
         reset={reset}
       />
       <Container style={{ paddingBottom: "80px" }}>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Main
-                datas={datas}
-                deleteImgHandle={deleteImgHandle}
-                changeSearch={changeSearch}
-                handleSearch={handleSearch}
-              />
-            }
-          ></Route>
-          <Route
-            path="/add"
-            element={
-              <Add
-                handleChange={handleChange}
-                onImageChange={onImageChange}
-                handleSubmit={handleSubmit}
-                input={input}
-                fileInput={fileInput}
-                showImages={showImages}
-                // handleDeleteImage={handleDeleteImage}
-                date={date}
-                dateChange={dateChange}
-              />
-            }
-          ></Route>
-          <Route path="/list" element={<List data={datas} />}></Route>
-          <Route path="*" element={<NotFound />}></Route>
-        </Routes>
+        <TransitionGroup>
+          <CSSTransition
+            key={location.key}
+            {...slideTransition}
+            mountOnEnter={false}
+            unmountOnExit={true}
+          >
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <Main
+                    datas={datas}
+                    deleteImgHandle={deleteImgHandle}
+                    changeSearch={changeSearch}
+                    handleSearch={handleSearch}
+                  />
+                }
+              ></Route>
+              <Route
+                path="/add"
+                element={
+                  <Add
+                    handleChange={handleChange}
+                    onImageChange={onImageChange}
+                    handleSubmit={handleSubmit}
+                    input={input}
+                    fileInput={fileInput}
+                    showImages={showImages}
+                    // handleDeleteImage={handleDeleteImage}
+                    date={date}
+                    dateChange={dateChange}
+                  />
+                }
+              ></Route>
+              <Route path="/list" element={<List data={datas} />}></Route>
+              <Route path="*" element={<NotFound />}></Route>
+            </Routes>
+          </CSSTransition>
+        </TransitionGroup>
       </Container>
       <Footer />
-    </BrowserRouter>
+    </>
   );
 }
 

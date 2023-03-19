@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-// import { MdClear } from "react-icons/md";
 import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -17,6 +16,7 @@ function Add(props) {
     date,
     dateChange,
   } = props;
+
   return (
     <Form
       method="POST"

@@ -2,26 +2,41 @@ import React from "react";
 import { BiHomeAlt2, BiCoinStack, BiBellMinus } from "react-icons/bi";
 import { BsList } from "react-icons/bs";
 import { CgAddR } from "react-icons/cg";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 function Footer(props) {
   return (
     <div className="footer">
       <ul className="container">
         <li>
-          <Link to="/">
+          <NavLink
+            to="/"
+            className={({ isActive }) => {
+              return isActive ? "active" : "";
+            }}
+          >
             <BiHomeAlt2 />
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link to="/list">
+          <NavLink
+            to="/list"
+            className={({ isActive }) => {
+              return isActive ? "active" : "";
+            }}
+          >
             <BsList />
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link to="/add">
+          <NavLink
+            to="/add"
+            className={({ isActive }) => {
+              return isActive ? "active" : "";
+            }}
+          >
             <CgAddR />
-          </Link>
+          </NavLink>
         </li>
         <li>
           <BiCoinStack />
