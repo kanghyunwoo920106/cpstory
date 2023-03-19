@@ -14,7 +14,7 @@ app.use(express.json());
 //   optionsSuccessStatus: 200
 // }));
 
-// app.use(express.static(path.join(__dirname, "/build")));
+app.use(express.static(path.join(__dirname, "/build")));
 
 // app.get("/", function (req, res, next) {
 //   res.sendFile(path.join(__dirname, "/build/index.html"));
@@ -33,8 +33,8 @@ app.get("/getdata", function (req, res) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "../client/public/upload/"); //로컬
-    //cb(null, "./build/upload/"); //서버
+    // cb(null, "../client/public/upload/"); //로컬
+    cb(null, "./build/upload/"); //서버
 
     // cb(null, "./upload/");
   },
