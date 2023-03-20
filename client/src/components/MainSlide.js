@@ -44,7 +44,7 @@ function MainSlide(props) {
             <img
               className="d-block w-100"
               // src={require(`../../public/upload/${data.image}`)}
-              src={`http://3.35.174.0/upload/${data.image}`}
+              src={`http://3.35.174.0:8000/upload/${data.image}`}
               alt="First slide"
             />
             <Carousel.Caption>
