@@ -257,7 +257,7 @@ function App() {
 
   const slideTransition = {
     classNames: "slide",
-    timeout: { enter: 300, exit: 300 },
+    timeout: { enter: 700, exit: 400 },
   };
 
   return (
@@ -276,7 +276,7 @@ function App() {
         handleHide={handleHide}
         reset={reset}
       />
-      <Container style={{ paddingBottom: "80px" }}>
+      <Container style={{ paddingBottom: "80px", overflow: "hidden" }}>
         <TransitionGroup>
           <CSSTransition
             key={location.key}
