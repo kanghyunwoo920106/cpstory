@@ -10,40 +10,70 @@ import Footer from "./components/Footer";
 import NotFound from "./components/NotFound";
 import Add from "./components/Add";
 import Main from "./components/Main";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setDatas,
+  setInput,
+  setImage,
+  setShowImages,
+  setOpen,
+  setPostCheck,
+  setShow,
+  setInputSearch,
+  setDate,
+  setSearchMap,
+  setMarkers,
+  setInfo,
+} from "./store/store.js";
 
 function App() {
-  const [datas, setDatas] = useState([]);
-  const [input, setInput] = useState({ title: "", description: "" });
-  const [image, setImage] = useState([]);
-  const [showImages, setShowImages] = useState([]);
-  const [isOpen, setOpen] = useState(false);
-  const [postCheck, setPostCheck] = useState(0);
-  const [show, setShow] = useState(false);
-  const [inputSearch, setInputSearch] = useState("");
   const fileInput = useRef();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const location = useLocation();
 
-  const [date, setDate] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
-    key: "selection",
-  });
+  const {
+    input,
+    image,
+    showImages,
+    isOpen,
+    postCheck,
+    show,
+    inputSearch,
+    date,
+    searchMap,
+    markers,
+    info,
+  } = useSelector((state) => state);
 
   const fetchData = async () => {
     try {
-      const result = await axios.get("/getdata");
-      setDatas(result.data.photodata);
-    } catch (err) {
-      console.log(err);
+      await axios.get("/getdata").then((result) => {
+        dispatch(setDatas(result.data.photodata));
+      });
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const location = useLocation();
-
-  const slideTransition = {
-    classNames: "slide",
-    timeout: { enter: 300, exit: 300 },
+  const reset = async (e) => {
+    try {
+      await axios
+        .get("/reset")
+        .then((result) => {
+          dispatch(setOpen(true));
+          dispatch(setPostCheck(3));
+          dispatch(setShow(false));
+          dispatch(setInput({ title: "", description: "" }));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -51,70 +81,61 @@ function App() {
   }, []);
 
   const handleModalSubmit = () => {
-    setOpen(false);
-    fetchData();
-    setShowImages([]);
+    dispatch(setOpen(false));
+    dispatch(fetchData());
+    dispatch(setShowImages([]));
+    navigate("/");
   };
 
   const handleRequestCancel = () => {
-    setOpen(false);
-    fetchData();
+    dispatch(setOpen(false));
+    dispatch(fetchData());
   };
 
   const handleShow = () => {
-    setShow(true);
+    dispatch(setShow(true));
   };
 
   const handleHide = () => {
-    setShow(false);
-  };
-
-  const reset = (e) => {
-    axios
-      .delete("/reset")
-      .then((result) => {
-        setOpen(true);
-        setPostCheck(3);
-        setShow(false);
-        setInput({ title: "", description: "" });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    dispatch(setShow(false));
   };
 
   const dateChange = (ranges) => {
-    setDate({
-      startDate: ranges["selection"].startDate,
-      endDate: ranges["selection"].endDate,
-      key: ranges["selection"].key,
-    });
+    dispatch(
+      setDate({
+        startDate: ranges["selection"].startDate,
+        endDate: ranges["selection"].endDate,
+        key: ranges["selection"].key,
+      })
+    );
   };
 
-  const deleteImgHandle = (idx) => {
-    axios
+  const deleteImgHandle = async (idx) => {
+    await axios
       .post("/delete", { idx: idx })
       .then((result) => {
-        setOpen(true);
-        setPostCheck(2);
+        dispatch(setOpen(true));
+        dispatch(setPostCheck(2));
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setInput({
-      ...input,
-      [name]: e.target.value,
-    });
+    dispatch(
+      setInput({
+        ...input,
+        [name]: e.target.value,
+      })
+    );
   };
 
   const onImageChange = (e) => {
     if (e.target.files) {
       const uploadFile = e.target.files;
-      setImage(uploadFile);
+      dispatch(setImage(uploadFile));
 
       const imageLists = e.target.files;
       let imageUrlLists = [...showImages];
@@ -128,7 +149,7 @@ function App() {
         imageUrlLists = imageUrlLists.slice(0, 10);
       }
 
-      setShowImages(imageUrlLists);
+      dispatch(setShowImages(imageUrlLists));
     }
   };
 
@@ -137,62 +158,106 @@ function App() {
   //   setImage(showImages.filter((_, index) => index !== id));
   // };
 
-  const handleSubmit = (event) => {
+  // // Handle form submission
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   try {
+  //     const response = await fetch("/insert", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(input),
+  //     });
+  //     const data = await response.json();
+  //     dispatch(setDatas([...datas, data]));
+  //     dispatch(setInput({ title: "", description: "" }));
+  //     dispatch(setImage([]));
+  //     dispatch(setShowImages([]));
+  //     dispatch(setOpen(false));
+  //     dispatch(setPostCheck(0));
+  //     dispatch(setShow(false));
+  //     dispatch(setInputSearch(""));
+  //     dispatch(
+  //       setDate({
+  //         startDate: new Date(),
+  //         endDate: new Date(),
+  //         key: "selection",
+  //       })
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
     if (input.title == "" || input.description == "") {
-      setOpen(true);
-      setPostCheck(1);
-      setShow(false);
+      dispatch(setOpen(true));
+      dispatch(setPostCheck(1));
+      dispatch(setShow(false));
       return;
     } else {
       formData.append("title", input.title);
       formData.append("description", input.description);
       formData.append("startdate", date.startDate.toISOString().split("T")[0]);
       formData.append("enddate", date.endDate.toISOString().split("T")[0]);
-
+      formData.append("address", info.content);
       for (let i = 0; i < image.length; i++) {
         formData.append("image", image[i]);
       }
 
       try {
-        axios.post("/insert", formData);
-        setOpen(true);
-        setPostCheck(0);
-        setInput({ title: "", description: "" });
-        setShow(false);
-        setShowImages([]);
-        if (fileInput && fileInput.current) {
-          fileInput.current.value = "";
-        }
+        await axios
+          .post("/insert", formData)
+          .then(() => {
+            dispatch(setOpen(true));
+            dispatch(setPostCheck(0));
+            dispatch(setInput({ title: "", description: "" }));
+            dispatch(setShow(false));
+            dispatch(setShowImages([]));
+            dispatch(setSearchMap(""));
+            if (fileInput && fileInput.current) {
+              fileInput.current.value = "";
+            }
+            navigate("/");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       } catch (err) {
-        setOpen(true);
-        setPostCheck(1);
+        dispatch(setOpen(true));
+        dispatch(setPostCheck(1));
         console.log(err);
       }
     }
   };
 
   const changeSearch = (e) => {
-    setInputSearch(e.target.value);
+    dispatch(setInputSearch(e.target.value));
   };
 
-  const handleSearch = (e) => {
-    const keyword = inputSearch;
-
-    axios
-      .post("/search", { keyword: keyword })
+  const handleSearch = async (e) => {
+    await axios
+      .post("/search", { keyword: inputSearch })
       .then((result) => {
         if (result.data.data.length == 0) {
-          setOpen(true);
-          setPostCheck(4);
+          dispatch(setOpen(true));
+          dispatch(setPostCheck(4));
         } else {
-          setDatas(result.data.data);
+          dispatch(setDatas(result.data.data));
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.error(error);
       });
+  };
+
+  const slideTransition = {
+    classNames: "slide",
+    timeout: { enter: 300, exit: 300 },
   };
 
   return (
@@ -224,7 +289,6 @@ function App() {
                 path="/"
                 element={
                   <Main
-                    datas={datas}
                     deleteImgHandle={deleteImgHandle}
                     changeSearch={changeSearch}
                     handleSearch={handleSearch}
@@ -238,16 +302,13 @@ function App() {
                     handleChange={handleChange}
                     onImageChange={onImageChange}
                     handleSubmit={handleSubmit}
-                    input={input}
                     fileInput={fileInput}
-                    showImages={showImages}
                     // handleDeleteImage={handleDeleteImage}
-                    date={date}
                     dateChange={dateChange}
                   />
                 }
               ></Route>
-              <Route path="/list" element={<List data={datas} />}></Route>
+              <Route path="/list" element={<List />}></Route>
               <Route path="*" element={<NotFound />}></Route>
             </Routes>
           </CSSTransition>

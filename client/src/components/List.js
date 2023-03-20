@@ -1,11 +1,12 @@
 import React from "react";
 import { Container, Row } from "react-bootstrap";
+import { useSelector } from "react-redux";
 
 function List(props) {
-  const { data } = props;
+  const { datas } = useSelector((state) => state);
   return (
     <Container className="main-list-wrap">
-      {data.map((data, index) => {
+      {datas.map((data, index) => {
         return (
           <Row key={data.idx}>
             {/* <img src={require(`../../public/upload/${data.image}`)} /> */}

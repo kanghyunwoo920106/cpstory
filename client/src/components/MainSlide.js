@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import Carousel from "react-bootstrap/Carousel";
 import { MdClear } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 function MainSlide(props) {
   const [index, setIndex] = useState(0);
-  let { datas, deleteImgHandle } = props;
+  const { datas } = useSelector((state) => state);
+
+  let { deleteImgHandle } = props;
 
   const handleSelect = (selectedIndex, e) => {
     setIndex(selectedIndex);
@@ -14,7 +17,7 @@ function MainSlide(props) {
     <Carousel
       activeIndex={index}
       onSelect={handleSelect}
-      interval="100000"
+      interval="1000"
       indicators={false}
     >
       {datas.map((data, i) => {
@@ -48,7 +51,8 @@ function MainSlide(props) {
               <h3>{data.title}</h3>
               <p>{data.description}</p>
               <span className="date">
-                {data.startdate.split("T")[0]} ~ {data.enddate.split("T")[0]}
+                {data.startdate.split("T")[0]} ~ {data.enddate.split("T")[0]} /{" "}
+                {data.address}
               </span>
             </Carousel.Caption>
           </Carousel.Item>

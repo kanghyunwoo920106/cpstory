@@ -1,21 +1,17 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
+import { useSelector, useDispatch } from "react-redux";
+import KaKaoMap from "./KaKaoMap";
 
 function Add(props) {
-  let {
-    handleChange,
-    onImageChange,
-    handleSubmit,
-    input,
-    fileInput,
-    showImages,
-    date,
-    dateChange,
-  } = props;
+  const { input, date, showImages } = useSelector((state) => state);
+
+  let { handleChange, onImageChange, handleSubmit, fileInput, dateChange } =
+    props;
 
   return (
     <Form
@@ -54,6 +50,7 @@ function Add(props) {
         />
       </Form.Group>
       <Form.Group controlId="formFileMultiple" className="mb-3">
+        <Form.Label>사진업로드</Form.Label>
         <Form.Control
           name="image"
           type="file"
@@ -66,10 +63,14 @@ function Add(props) {
         {showImages.map((image, id) => (
           <div key={id} className="previewImg-wrap">
             <img src={image} alt={`${image}-${id}`} />
-            {/* <MdClear onClick={() => handleDeleteImage(id)} /> */}
           </div>
         ))}
       </div>
+      <div>
+        <Form.Label>장소선택</Form.Label>
+        <KaKaoMap />
+      </div>
+
       <Button type="submit" style={{ width: "100%" }}>
         글등록
       </Button>

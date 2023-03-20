@@ -170,3 +170,18 @@
         color: $nav-active-color !important;
     }
 }
+
+// kakaomap 
+@media (max-width: 768px) {
+    #react-kakao-maps-sdk-map-container {
+      width: 100%;
+      height: 300px;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    #react-kakao-maps-sdk-map-container {
+      width: 50%;
+      height: 500px;
+    }
+  }

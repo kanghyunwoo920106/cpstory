@@ -47,9 +47,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post("/insert", upload.array("image"), (req, res) => {
+  console.log(req.body);
   for (let i = 0; i < req.files.length; i++) {
     db.query(
-      `INSERT INTO data(title,description,image,startdate,enddate) VALUES('${req.body.title}','${req.body.description}','${req.files[i].filename}','${req.body.startdate}','${req.body.enddate}')`
+      `INSERT INTO data(title,description,image,startdate,enddate,address) VALUES('${req.body.title}','${req.body.description}','${req.files[i].filename}','${req.body.startdate}','${req.body.enddate}','${req.body.address}')`
     );
   }
 
@@ -73,7 +74,7 @@ app.post("/delete", (req, res) => {
   });
 });
 
-app.delete("/reset", (req, res) => {
+app.get("/reset", (req, res) => {
   db.query(`DELETE FROM data`, (err, data) => {
     if (!err) res.send({ state: "200", message: "success" });
     else res.send(err);
