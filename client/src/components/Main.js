@@ -5,8 +5,8 @@ import { useSelector, useDispatch } from "react-redux";
 
 function Main(props) {
   const { datas } = useSelector((state) => state);
-
   const { deleteImgHandle, changeSearch, handleSearch } = props;
+
   return (
     <div className={datas.length == 0 ? "nodata" : "main-wrapper"}>
       <MainSlide deleteImgHandle={deleteImgHandle} />
@@ -14,5 +14,12 @@ function Main(props) {
     </div>
   );
 }
+
+// const loading = async () => {
+//   // loading some data
+
+//   // call method to indicate that loading is done and we are ready to switch
+//   loadingContext.done();
+// };
 
 export default Main;

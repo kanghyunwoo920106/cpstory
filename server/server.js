@@ -47,13 +47,21 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post("/insert", upload.array("image"), (req, res) => {
-  for (let i = 0; i < req.files.length; i++) {
-    db.query(
-      `INSERT INTO data(title,description,image,startdate,enddate,address) VALUES('${req.body.title}','${req.body.description}','${req.files[i].filename}','${req.body.startdate}','${req.body.enddate}','${req.body.address}')`
-    );
-  }
+  try {
+    const { title, description, startdate, enddate, address } = req.body;
+    const images = req.files.map((file) => file.filename);
 
-  res.send({ state: "200", message: "success" });
+    for (let i = 0; i < images.length; i++) {
+      db.query(
+        `INSERT INTO data(title,description,image,startdate,enddate,address) VALUES('${title}','${description}','${images[i]}','${startdate}','${enddate}','${address}')`
+      );
+    }
+
+    res.send({ status: 200, message: "success" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
 });
 
 app.post("/search", (req, res) => {
@@ -68,14 +76,14 @@ app.post("/search", (req, res) => {
 
 app.post("/delete", (req, res) => {
   db.query(`DELETE FROM data WHERE idx = '${req.body.idx}'`, (err, data) => {
-    if (!err) res.send({ state: "200", message: "success" });
+    if (!err) res.send({ state: "200", messsage: "success" });
     else res.send(err);
   });
 });
 
 app.get("/reset", (req, res) => {
   db.query(`DELETE FROM data`, (err, data) => {
-    if (!err) res.send({ state: "200", message: "success" });
+    if (!err) res.send({ state: "200", message: "success", result: data });
     else res.send(err);
   });
 });

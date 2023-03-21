@@ -17,7 +17,7 @@ function MainSlide(props) {
     <Carousel
       activeIndex={index}
       onSelect={handleSelect}
-      interval="1000"
+      interval="3000"
       indicators={false}
     >
       {datas.map((data, i) => {

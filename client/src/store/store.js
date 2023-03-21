@@ -19,6 +19,7 @@ const initialState = {
   searchMap: "분당맛집",
   markers: [],
   info: "",
+  loading: false,
 };
 
 // 액션 타입 정의
@@ -34,6 +35,7 @@ const SET_DATE = "SET_DATE";
 const SET_SEARCH_MAP = "SET_SEARCH_MAP";
 const SET_MARKERS = "SET_MARKERS";
 const SET_INFO = "SET_INFO";
+const SET_LOADING = "SET_LOADING";
 
 // 액션 생성 함수 정의
 export const setDatas = (datas) => ({
@@ -94,6 +96,11 @@ export const setMarkers = (markers) => ({
 export const setInfo = (info) => ({
   type: SET_INFO,
   info,
+});
+
+export const setLoading = (loading) => ({
+  type: SET_LOADING,
+  loading,
 });
 
 // 리듀서 함수 정의
@@ -158,6 +165,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         info: action.info,
+      };
+    case SET_LOADING:
+      return {
+        ...state,
+        loading: action.loading,
       };
 
     default:

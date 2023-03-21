@@ -26,7 +26,9 @@ import {
   setSearchMap,
   setMarkers,
   setInfo,
+  setLoading,
 } from "./store/store.js";
+import Loading from "./components/Loading";
 
 function App() {
   const fileInput = useRef();
@@ -35,6 +37,7 @@ function App() {
   const location = useLocation();
 
   const {
+    datas,
     input,
     image,
     showImages,
@@ -46,50 +49,58 @@ function App() {
     searchMap,
     markers,
     info,
+    loading,
   } = useSelector((state) => state);
 
-  const fetchData = async () => {
-    try {
-      await axios.get("/getdata").then((result) => {
+  useEffect(() => {
+    dispatch(setLoading(true));
+    const fetchData = async () => {
+      try {
+        const result = await axios.get("/getdata");
+
         dispatch(setDatas(result.data.photodata));
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
+        dispatch(setLoading(false));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const reset = async (e) => {
+    dispatch(setLoading(true));
     try {
       await axios
         .get("/reset")
-        .then((result) => {
+        .then(() => {
+          dispatch(setLoading(false));
           dispatch(setOpen(true));
           dispatch(setPostCheck(3));
           dispatch(setShow(false));
           dispatch(setInput({ title: "", description: "" }));
+          dispatch(setSearchMap(""));
         })
         .catch((error) => {
-          console.error(error);
+          console.log(error);
         });
     } catch (error) {
       console.error(error);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const handleModalSubmit = () => {
-    dispatch(setOpen(false));
-    dispatch(fetchData());
-    dispatch(setShowImages([]));
-    navigate("/");
+    try {
+      dispatch(setOpen(false));
+      dispatch(setShowImages([]));
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleRequestCancel = () => {
     dispatch(setOpen(false));
-    dispatch(fetchData());
   };
 
   const handleShow = () => {
@@ -111,15 +122,19 @@ function App() {
   };
 
   const deleteImgHandle = async (idx) => {
-    await axios
-      .post("/delete", { idx: idx })
-      .then((result) => {
-        dispatch(setOpen(true));
-        dispatch(setPostCheck(2));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    try {
+      await axios
+        .post("/delete", { idx: idx })
+        .then((result) => {
+          dispatch(setOpen(true));
+          dispatch(setPostCheck(2));
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleChange = (e) => {
@@ -194,25 +209,31 @@ function App() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
-    if (input.title == "" || input.description == "") {
-      dispatch(setOpen(true));
-      dispatch(setPostCheck(1));
-      dispatch(setShow(false));
-      return;
-    } else {
-      formData.append("title", input.title);
-      formData.append("description", input.description);
-      formData.append("startdate", date.startDate.toISOString().split("T")[0]);
-      formData.append("enddate", date.endDate.toISOString().split("T")[0]);
-      formData.append("address", info.content);
-      for (let i = 0; i < image.length; i++) {
-        formData.append("image", image[i]);
-      }
+    try {
+      if (input.title == "" || input.description == "" || searchMap == "") {
+        dispatch(setOpen(true));
+        dispatch(setPostCheck(1));
+        dispatch(setShow(false));
+        return;
+      } else {
+        formData.append("title", input.title);
+        formData.append("description", input.description);
+        formData.append(
+          "startdate",
+          date.startDate.toISOString().split("T")[0]
+        );
+        formData.append("enddate", date.endDate.toISOString().split("T")[0]);
+        formData.append("address", info.content);
 
-      try {
+        for (let i = 0; i < showImages.length; i++) {
+          const file = await fetch(showImages[i]).then((r) => r.blob());
+          formData.append("image", file, "image-" + i + ".jpg");
+        }
+        dispatch(setLoading(true));
         await axios
           .post("/insert", formData)
           .then(() => {
+            dispatch(setLoading(false));
             dispatch(setOpen(true));
             dispatch(setPostCheck(0));
             dispatch(setInput({ title: "", description: "" }));
@@ -227,11 +248,9 @@ function App() {
           .catch((error) => {
             console.error(error);
           });
-      } catch (err) {
-        dispatch(setOpen(true));
-        dispatch(setPostCheck(1));
-        console.log(err);
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -240,9 +259,11 @@ function App() {
   };
 
   const handleSearch = async (e) => {
+    setLoading(true);
     await axios
       .post("/search", { keyword: inputSearch })
       .then((result) => {
+        setLoading(false);
         if (result.data.data.length == 0) {
           dispatch(setOpen(true));
           dispatch(setPostCheck(4));
@@ -315,6 +336,7 @@ function App() {
         </TransitionGroup>
       </Container>
       <Footer />
+      {loading ? <Loading /> : null}
     </>
   );
 }
