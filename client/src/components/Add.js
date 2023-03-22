@@ -57,6 +57,7 @@ function Add(props) {
           onChange={onImageChange}
           ref={fileInput}
           multiple
+          className="file-input"
         />
       </Form.Group>
       <div>
@@ -67,11 +68,11 @@ function Add(props) {
         ))}
       </div>
       <div>
-        <Form.Label>장소선택</Form.Label>
+        <Form.Label>장소검색</Form.Label>
         <KaKaoMap />
       </div>
 
-      <Button type="submit" style={{ width: "100%" }}>
+      <Button type="submit" className="add-submit-btn">
         글등록
       </Button>
     </Form>

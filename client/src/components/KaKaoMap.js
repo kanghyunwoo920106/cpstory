@@ -1,14 +1,28 @@
 /*global kakao*/
 import React, { useEffect, useState, useRef } from "react";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { useDispatch, useSelector } from "react-redux";
-import { setSearchMap, setMarkers, setInfo } from "../store/store.js";
+import {
+  setSearchMap,
+  setMarkers,
+  setInfo,
+  setAddress,
+  setPopShow,
+} from "../store/store.js";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
+
 function KaKaoMap() {
   const { kakao } = window;
   const [map, setMap] = useState();
-  const { searchMap, markers, info } = useSelector((state) => state);
+  const { searchMap, markers, info, address, popShow } = useSelector(
+    (state) => state
+  );
   const dispatch = useDispatch();
+  const search = useRef(null);
+  const placename = useRef(null);
+
   useEffect(() => {
     if (!map) return;
     const ps = new kakao.maps.services.Places();
@@ -35,6 +49,7 @@ function KaKaoMap() {
 
           // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
           map.setBounds(bounds);
+          dispatch(setAddress(data));
         }
       });
     }
@@ -42,7 +57,40 @@ function KaKaoMap() {
 
   const mapChange = (e) => {
     dispatch(setSearchMap(e.target.value));
+    if (search.current.value == "") {
+      dispatch(setPopShow(false));
+    } else {
+      dispatch(setPopShow(true));
+    }
   };
+
+  const popover = (
+    <Popover id="popover-basic">
+      <Popover.Header as="h3">검색추천장소</Popover.Header>
+      <Popover.Body>
+        {address.map((data, index) => {
+          return (
+            <ul className="address-list-wrap" key={index}>
+              <li
+                onClick={(e) => {
+                  dispatch(setInfo(data));
+                  dispatch(setPopShow(false));
+                  search.current.value = data.place_name;
+                }}
+                ref={placename}
+              >
+                {data.place_name}
+              </li>
+              <li>{data.address_name}</li>
+              <li>
+                <a href={data.place_url}> {data.place_url}</a>
+              </li>
+            </ul>
+          );
+        })}
+      </Popover.Body>
+    </Popover>
+  );
 
   return (
     <>
@@ -56,7 +104,7 @@ function KaKaoMap() {
           height: "350px",
           zIndex: 0,
         }}
-        level={3}
+        level={6}
         onCreate={setMap}
       >
         {markers.map((marker) => (
@@ -92,7 +140,19 @@ function KaKaoMap() {
         ))}
       </Map>
       <Form.Group className="mt-3 mb-3">
-        <Form.Control type="text" onChange={mapChange} placeholder="장소검색" />
+        <OverlayTrigger
+          show={popShow}
+          trigger="click"
+          placement="top-start"
+          overlay={popover}
+        >
+          <Form.Control
+            type="text"
+            onChange={mapChange}
+            placeholder="장소검색"
+            ref={search}
+          />
+        </OverlayTrigger>
       </Form.Group>
     </>
   );

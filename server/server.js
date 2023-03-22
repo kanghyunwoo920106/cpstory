@@ -76,7 +76,7 @@ app.post("/search", (req, res) => {
 
 app.post("/delete", (req, res) => {
   db.query(`DELETE FROM data WHERE idx = '${req.body.idx}'`, (err, data) => {
-    if (!err) res.send({ state: "200", messsage: "success" });
+    if (!err) res.send({ state: "200", messsage: "success", result: data });
     else res.send(err);
   });
 });

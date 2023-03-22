@@ -20,6 +20,8 @@ const initialState = {
   markers: [],
   info: "",
   loading: false,
+  address: [],
+  popShow: false,
 };
 
 // 액션 타입 정의
@@ -36,6 +38,8 @@ const SET_SEARCH_MAP = "SET_SEARCH_MAP";
 const SET_MARKERS = "SET_MARKERS";
 const SET_INFO = "SET_INFO";
 const SET_LOADING = "SET_LOADING";
+const SET_ADDRESS = "SET_ADDRESS";
+const SET_POPSHOW = "SET_POPSHOW";
 
 // 액션 생성 함수 정의
 export const setDatas = (datas) => ({
@@ -101,6 +105,16 @@ export const setInfo = (info) => ({
 export const setLoading = (loading) => ({
   type: SET_LOADING,
   loading,
+});
+
+export const setAddress = (address) => ({
+  type: SET_ADDRESS,
+  address,
+});
+
+export const setPopShow = (popShow) => ({
+  type: SET_POPSHOW,
+  popShow,
 });
 
 // 리듀서 함수 정의
@@ -170,6 +184,16 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loading: action.loading,
+      };
+    case SET_ADDRESS:
+      return {
+        ...state,
+        address: action.address,
+      };
+    case SET_POPSHOW:
+      return {
+        ...state,
+        popShow: action.popShow,
       };
 
     default:
