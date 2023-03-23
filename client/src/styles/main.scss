@@ -54,6 +54,20 @@
     height: 50px;
     left: 0;
     border-radius: 0;
+    z-index: 100;
+}
+
+.app_title {
+    border: none
+}
+
+.edit-title {
+    cursor: pointer;
+}
+
+// DataList
+.list-group-item-action {
+    padding: 0;
 }
 
 // MainSlide
@@ -75,6 +89,15 @@
     margin: 25px 15px -7px auto;
     color: #8a8a8a;
 }
+
+.controls {
+    float: left;
+    width: 3.90625%;
+    height: 100%;
+    margin-left: 0.1953125%;
+    display: block;
+  }
+  
 
 // List
 .main-list-wrap {

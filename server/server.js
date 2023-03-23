@@ -20,6 +20,25 @@ app.use(express.static(path.join(__dirname, "/build")));
 //   res.sendFile(path.join(__dirname, "/build/index.html"));
 // });
 
+app.get("/getinfo", function (req, res, next) {
+  db.query("SELECT * FROM app_info", function (err, data) {
+    if (!err) {
+      res.send({ status: 200, message: "success", app_info: data });
+    }
+  });
+});
+
+app.post("/updateinfo", (req, res) => {
+  db.query(
+    `UPDATE app_info SET app_name = '${req.body.appTitle}' WHERE idx=1`,
+
+    (err, data) => {
+      if (!err) res.send({ state: "200", message: "success", data: data });
+      else res.send(err);
+    }
+  );
+});
+
 app.get("/getdata", function (req, res) {
   db.query("SELECT * FROM data order by startdate DESC", function (err, data) {
     if (!err) {

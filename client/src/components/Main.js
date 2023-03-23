@@ -19,11 +19,4 @@ function Main(props) {
   );
 }
 
-// const loading = async () => {
-//   // loading some data
-
-//   // call method to indicate that loading is done and we are ready to switch
-//   loadingContext.done();
-// };
-
 export default Main;

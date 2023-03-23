@@ -210,10 +210,16 @@ function App() {
     event.preventDefault();
     const formData = new FormData();
     try {
-      if (input.title == "" || input.description == "" || searchMap == "") {
+      if (
+        input.title == "" ||
+        input.description == "" ||
+        searchMap == "" ||
+        image.length == 0
+      ) {
         dispatch(setOpen(true));
         dispatch(setPostCheck(1));
         dispatch(setShow(false));
+        console.log(image);
         return;
       } else {
         formData.append("title", input.title);
@@ -223,15 +229,17 @@ function App() {
           date.startDate.toISOString().split("T")[0]
         );
         formData.append("enddate", date.endDate.toISOString().split("T")[0]);
-        console.log(info);
         formData.append("address", info.place_name);
 
-        for (let i = 0; i < showImages.length; i++) {
-          const file = await fetch(showImages[i]).then((r) => r.blob());
-          formData.append("image", file, "image-" + i + ".jpg");
+        // for (let i = 0; i < showImages.length; i++) {
+        //   const file = await fetch(showImages[i]).then((r) => r.blob());
+        //   formData.append("image", file, "image-" + i + ".jpg");
+        // }
+
+        for (let i = 0; i < image.length; i++) {
+          formData.append("image", image[i]);
         }
 
-        console.log(formData);
         dispatch(setLoading(true));
         await axios
           .post("/insert", formData)

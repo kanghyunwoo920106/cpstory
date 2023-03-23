@@ -17,7 +17,7 @@ function MainSlide(props) {
     <Carousel
       activeIndex={index}
       onSelect={handleSelect}
-      interval="3000"
+      interval="333000"
       indicators={false}
     >
       {datas.map((data, i) => {
@@ -40,13 +40,24 @@ function MainSlide(props) {
               size="20"
               color="#ff1a0a"
             />
+            {data.image.split(".")[1] == "mp4" ? (
+              <video
+                // src={require(`../../public/upload/${data.image}`)}
+                src={`http://15.165.77.113:8000/upload/${data.image}`}
+                autoPlay
+                loop
+                controls
+                style={{ width: "100%" }}
+              />
+            ) : (
+              <img
+                className="d-block w-100"
+                // src={require(`../../public/upload/${data.image}`)}
+                src={`http://15.165.77.113:8000/upload/${data.image}`}
+                alt="First slide"
+              />
+            )}
 
-            <img
-              className="d-block w-100"
-              // src={require(`../../public/upload/${data.image}`)}
-              src={`http://15.165.77.113:8000/upload/${data.image}`}
-              alt="First slide"
-            />
             <Carousel.Caption>
               <h3>{data.title}</h3>
               <p>{data.description}</p>

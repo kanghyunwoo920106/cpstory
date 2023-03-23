@@ -72,7 +72,7 @@ function Add(props) {
         <KaKaoMap />
       </div>
 
-      <Button type="submit" className="add-submit-btn">
+      <Button type="submit" className="add-submit-btn mt-3">
         글등록
       </Button>
     </Form>

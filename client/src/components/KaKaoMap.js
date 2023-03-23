@@ -94,6 +94,21 @@ function KaKaoMap() {
 
   return (
     <>
+      <Form.Group className="mt-3 mb-3">
+        <OverlayTrigger
+          show={popShow}
+          trigger="click"
+          placement="bottom-start"
+          overlay={popover}
+        >
+          <Form.Control
+            type="text"
+            onChange={mapChange}
+            placeholder="장소검색"
+            ref={search}
+          />
+        </OverlayTrigger>
+      </Form.Group>
       <Map
         center={{
           lat: 37.566826,
@@ -139,21 +154,6 @@ function KaKaoMap() {
           </MapMarker>
         ))}
       </Map>
-      <Form.Group className="mt-3 mb-3">
-        <OverlayTrigger
-          show={popShow}
-          trigger="click"
-          placement="top-start"
-          overlay={popover}
-        >
-          <Form.Control
-            type="text"
-            onChange={mapChange}
-            placeholder="장소검색"
-            ref={search}
-          />
-        </OverlayTrigger>
-      </Form.Group>
     </>
   );
 }
