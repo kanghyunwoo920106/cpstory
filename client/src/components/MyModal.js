@@ -56,6 +56,18 @@ const MyModal = ({ isOpen, onSubmit, onRequestClose, postCheck }) => {
           </p>
         ) : postCheck == 3 ? (
           <p style={{ flexGrow: 2, lineHeight: "80px" }}>초기화 되었습니다.</p>
+        ) : postCheck == 4 ? (
+          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
+            한줄 일기가 등록되었습니다.
+          </p>
+        ) : postCheck == 5 ? (
+          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
+            한줄 일기가 수정되었습니다.
+          </p>
+        ) : postCheck == 6 ? (
+          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
+            한줄 일기가 삭제되었습니다.
+          </p>
         ) : (
           <p style={{ flexGrow: 2, lineHeight: "80px" }}>
             찾으시는 추억이 없습니다.

@@ -22,8 +22,11 @@ const initialState = {
   loading: false,
   address: [],
   popShow: false,
+  diary: "",
+  diaryData: [],
+  modalOpen: false,
+  diaryKey: 0,
 };
-
 // 액션 타입 정의
 const SET_DATAS = "SET_DATAS";
 const SET_INPUT = "SET_INPUT";
@@ -40,6 +43,10 @@ const SET_INFO = "SET_INFO";
 const SET_LOADING = "SET_LOADING";
 const SET_ADDRESS = "SET_ADDRESS";
 const SET_POPSHOW = "SET_POPSHOW";
+const SET_DIARY = "SET_DIARY";
+const SET_DIARYDATA = "SET_DIARYDATA";
+const SET_MODALOPEN = "SET_MODALOPEN";
+const SET_DIARYKEY = "SET_DIARYKEY";
 
 // 액션 생성 함수 정의
 export const setDatas = (datas) => ({
@@ -115,6 +122,27 @@ export const setAddress = (address) => ({
 export const setPopShow = (popShow) => ({
   type: SET_POPSHOW,
   popShow,
+});
+
+export const setDiary = (diary) => ({
+  type: SET_DIARY,
+  diary,
+});
+
+export const setDiaryData = (diaryData) => ({
+  type: SET_DIARYDATA,
+  diaryData,
+  timestamp: Date.now(),
+});
+
+export const setModalOpen = (modalOpen) => ({
+  type: SET_MODALOPEN,
+  modalOpen,
+});
+
+export const setDiaryKey = (diaryKey) => ({
+  type: SET_DIARYKEY,
+  diaryKey,
 });
 
 // 리듀서 함수 정의
@@ -194,6 +222,26 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         popShow: action.popShow,
+      };
+    case SET_DIARY:
+      return {
+        ...state,
+        diary: action.diary,
+      };
+    case SET_DIARYDATA:
+      return {
+        ...state,
+        diaryData: action.diaryData,
+      };
+    case SET_MODALOPEN:
+      return {
+        ...state,
+        modalOpen: action.modalOpen,
+      };
+    case SET_DIARYKEY:
+      return {
+        ...state,
+        diaryKey: action.diaryKey,
       };
 
     default:

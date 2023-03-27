@@ -1,4 +1,3 @@
-import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { Container } from "react-bootstrap";
 import Header from "./components/Header";
@@ -27,6 +26,8 @@ import {
   setMarkers,
   setInfo,
   setLoading,
+  setDiary,
+  setDiaryData,
 } from "./store/store.js";
 import Loading from "./components/Loading";
 
@@ -51,6 +52,8 @@ function App() {
     markers,
     info,
     loading,
+    diary,
+    diaryData,
   } = useSelector((state) => state);
 
   const fetchData = async () => {
@@ -64,10 +67,19 @@ function App() {
     }
   };
 
+  const fetchDiaryData = async () => {
+    try {
+      const result = await axios.get("/get/diary");
+      dispatch(setDiaryData(result.data.diarydata));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     dispatch(setLoading(true));
-
     fetchData();
+    fetchDiaryData();
   }, []);
 
   const reset = async (e) => {
@@ -96,11 +108,13 @@ function App() {
     dispatch(setOpen(false));
     dispatch(setShowImages([]));
     fetchData();
+    fetchDiaryData();
   };
 
   const handleRequestCancel = () => {
     dispatch(setOpen(false));
     fetchData();
+    fetchDiaryData();
   };
 
   const handleShow = () => {
@@ -168,44 +182,6 @@ function App() {
     }
   };
 
-  // const handleDeleteImage = (id) => {
-  //   setShowImages(showImages.filter((_, index) => index !== id));
-  //   setImage(showImages.filter((_, index) => index !== id));
-  // };
-
-  // // Handle form submission
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   try {
-  //     const response = await fetch("/insert", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(input),
-  //     });
-  //     const data = await response.json();
-  //     dispatch(setDatas([...datas, data]));
-  //     dispatch(setInput({ title: "", description: "" }));
-  //     dispatch(setImage([]));
-  //     dispatch(setShowImages([]));
-  //     dispatch(setOpen(false));
-  //     dispatch(setPostCheck(0));
-  //     dispatch(setShow(false));
-  //     dispatch(setInputSearch(""));
-  //     dispatch(
-  //       setDate({
-  //         startDate: new Date(),
-  //         endDate: new Date(),
-  //         key: "selection",
-  //       })
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -219,7 +195,6 @@ function App() {
         dispatch(setOpen(true));
         dispatch(setPostCheck(1));
         dispatch(setShow(false));
-        console.log(image);
         return;
       } else {
         formData.append("title", input.title);
@@ -230,11 +205,6 @@ function App() {
         );
         formData.append("enddate", date.endDate.toISOString().split("T")[0]);
         formData.append("address", info.place_name);
-
-        // for (let i = 0; i < showImages.length; i++) {
-        //   const file = await fetch(showImages[i]).then((r) => r.blob());
-        //   formData.append("image", file, "image-" + i + ".jpg");
-        // }
 
         for (let i = 0; i < image.length; i++) {
           formData.append("image", image[i]);
@@ -278,7 +248,7 @@ function App() {
         setLoading(false);
         if (result.data.data.length == 0) {
           dispatch(setOpen(true));
-          dispatch(setPostCheck(4));
+          dispatch(setPostCheck(7));
           dispatch(setInputSearch(""));
           search.current.value = "";
         } else {
@@ -330,6 +300,7 @@ function App() {
                     changeSearch={changeSearch}
                     handleSearch={handleSearch}
                     search={search}
+                    dateChange={dateChange}
                   />
                 }
               ></Route>

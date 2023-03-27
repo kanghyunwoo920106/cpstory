@@ -7,6 +7,7 @@ function Search(props) {
   const { changeSearch, handleSearch, search } = props;
   return (
     <div className="search-wraper">
+      <Form.Label>추억 검색</Form.Label>
       <Form className="d-flex">
         <Form.Control
           type="search"

@@ -8,6 +8,7 @@ import store from "./store/store.js";
 import ReactModal from "react-modal";
 import "./styles/main.css";
 import "./styles/reset.css";
+import "./styles/style.css";
 import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
