@@ -131,7 +131,7 @@ export const Calender = () => {
   };
 
   return (
-    <div className="calendar">
+    <div className="calendar main-box">
       <h1 className="form-label">한줄 메모장</h1>
       <RenderHeader
         currentMonth={currentMonth}

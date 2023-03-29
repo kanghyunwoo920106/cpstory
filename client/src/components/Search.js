@@ -6,7 +6,7 @@ import Nav from "react-bootstrap/Nav";
 function Search(props) {
   const { changeSearch, handleSearch, search } = props;
   return (
-    <div className="search-wraper">
+    <div className="search-wraper main-box">
       <Form.Label>추억 검색</Form.Label>
       <Form className="d-flex">
         <Form.Control

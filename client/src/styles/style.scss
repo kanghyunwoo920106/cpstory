@@ -6,6 +6,7 @@
     .header {
         @include common.size(100%, 7%);
         @include common.flex-row(space-between, baseline);
+        margin: 0;
         .col.col-first {
             @include common.size(80%, 100%);
             @include common.flex-column(center, flex-start);
@@ -46,6 +47,8 @@
             @include common.size(12.9%, 100%);
             @include common.flex-column(flex-end, flex-start);
             padding-left: 1%;
+            padding-top: 2%;
+            padding-bottom: 2%;
             background: transparentize(theme.$step-color, 0.6);
             border-radius: 10px;
         }
@@ -93,4 +96,11 @@
             }
         }
     }
+}
+
+.main-box {
+    background: #eaeaea;
+    padding: 10px;
+    box-shadow: 0 2px 2px #ccc;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
 }

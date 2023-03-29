@@ -48,8 +48,7 @@ function DateList(props) {
                       >
                         {data.image.split(".")[1] === "mp4" ? (
                           <video
-                            // src={require(`../../public/upload/${data.image}`)}
-                            src={`http://15.165.77.113:8000/upload/${data.image}`}
+                            src={require(`${process.env.REACT_APP_IMAGE_PATH}/${data.image}`)}
                             autoPlay
                             loop
                             controls
@@ -58,8 +57,7 @@ function DateList(props) {
                         ) : (
                           <img
                             className="d-block w-100"
-                            // src={require(`../../public/upload/${data.image}`)}
-                            src={`http://15.165.77.113:8000/upload/${data.image}`}
+                            src={require(`${process.env.REACT_APP_IMAGE_PATH}/${data.image}`)}
                             alt="First slide"
                           />
                         )}

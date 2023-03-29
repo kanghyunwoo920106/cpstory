@@ -31,7 +31,9 @@ const Modal = (props) => {
         })
         .then((result) => {
           dispatch(setOpen(true));
-          dispatch(setPostCheck(4));
+          dispatch(
+            setPostCheck({ message: "일기가 등록되었습니다.", url: "" })
+          );
           dispatch(setModalOpen(false));
         })
         .catch((error) => {
@@ -39,7 +41,12 @@ const Modal = (props) => {
         });
     } else {
       dispatch(setOpen(true));
-      dispatch(setPostCheck(1));
+      dispatch(
+        setPostCheck({
+          message: "등록을 실패했습니다. 다시 등록해주세요.",
+          url: "",
+        })
+      );
       dispatch(setModalOpen(false));
     }
   };
@@ -52,7 +59,7 @@ const Modal = (props) => {
       })
       .then((result) => {
         dispatch(setOpen(true));
-        dispatch(setPostCheck(5));
+        dispatch(setPostCheck({ message: "일기가 수정되었습니다", url: "" }));
         dispatch(setModalOpen(false));
       })
       .catch((error) => {
@@ -67,7 +74,7 @@ const Modal = (props) => {
       })
       .then((result) => {
         dispatch(setOpen(true));
-        dispatch(setPostCheck(6));
+        dispatch(setPostCheck({ message: "일기가 삭제되었습니다", url: "" }));
         dispatch(setModalOpen(false));
       })
       .catch((error) => {

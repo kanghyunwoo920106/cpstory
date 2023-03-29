@@ -1,14 +1,15 @@
 import "bootstrap/dist/css/bootstrap.css";
-import { Container } from "react-bootstrap";
-import Header from "./components/Header";
 import { useEffect, useRef, useState } from "react";
+import { Container } from "react-bootstrap";
+import Header from "./page/Header";
+import List from "./page/List";
+import Add from "./page/Add";
+import Main from "./page/Main";
+import Profile from "./page/Profile";
+import Footer from "./page/Footer";
 import axios from "axios";
 import MyModal from "./components/MyModal";
-import List from "./components/List";
-import Footer from "./components/Footer";
 import NotFound from "./components/NotFound";
-import Add from "./components/Add";
-import Main from "./components/Main";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,13 +24,13 @@ import {
   setInputSearch,
   setDate,
   setSearchMap,
-  setMarkers,
-  setInfo,
   setLoading,
-  setDiary,
   setDiaryData,
+  setAuthenticated,
 } from "./store/store.js";
 import Loading from "./components/Loading";
+import SignIn from "./page/SignIn";
+import SignUp from "./page/SignUp";
 
 function App() {
   const fileInput = useRef();
@@ -37,6 +38,7 @@ function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const accessToken = localStorage.getItem("access_token");
 
   const {
     datas,
@@ -49,16 +51,31 @@ function App() {
     inputSearch,
     date,
     searchMap,
-    markers,
     info,
     loading,
-    diary,
-    diaryData,
+    authenticated,
   } = useSelector((state) => state);
+
+  // useEffect(() => {
+  //   const accessToken = localStorage.getItem("access_token");
+  //   console.log(accessToken);
+  //   if (!accessToken) {
+  //     dispatch(setAuthenticated(false));
+  //   } else {
+  //     axios
+  //       .get("/auth", { headers: { Authorization: `Bearer ${accessToken}` } })
+  //       .then(() => {
+  //         dispatch(setAuthenticated(true));
+  //       })
+  //       .catch(() => {
+  //         dispatch(setAuthenticated(false));
+  //       });
+  //   }
+  // }, []);
 
   const fetchData = async () => {
     try {
-      const result = await axios.get("/getdata");
+      const result = await axios.get("/get/data");
 
       dispatch(setDatas(result.data.photodata));
       dispatch(setLoading(false));
@@ -90,7 +107,7 @@ function App() {
         .then(() => {
           dispatch(setLoading(false));
           dispatch(setOpen(true));
-          dispatch(setPostCheck(3));
+          dispatch(setPostCheck({ message: "초기화가 되었습니다", url: "" }));
           dispatch(setShow(false));
           dispatch(setInput({ title: "", description: "" }));
           dispatch(setSearchMap(""));
@@ -141,7 +158,7 @@ function App() {
         .post("/delete", { idx: idx })
         .then((result) => {
           dispatch(setOpen(true));
-          dispatch(setPostCheck(2));
+          dispatch(setPostCheck({ message: "이미지를 삭제했습니다", url: "" }));
         })
         .catch((err) => {
           console.error(err);
@@ -193,7 +210,12 @@ function App() {
         image.length == 0
       ) {
         dispatch(setOpen(true));
-        dispatch(setPostCheck(1));
+        dispatch(
+          setPostCheck({
+            message: "등록을 실패했습니다. 다시 등록해주세요",
+            url: "add",
+          })
+        );
         dispatch(setShow(false));
         return;
       } else {
@@ -212,11 +234,13 @@ function App() {
 
         dispatch(setLoading(true));
         await axios
-          .post("/insert", formData)
+          .post("/insert/post", formData)
           .then(() => {
             dispatch(setLoading(false));
             dispatch(setOpen(true));
-            dispatch(setPostCheck(0));
+            dispatch(
+              setPostCheck({ message: "추억이 등록되었습니다", url: "" })
+            );
             dispatch(setInput({ title: "", description: "" }));
             dispatch(setShow(false));
             dispatch(setShowImages([]));
@@ -248,7 +272,9 @@ function App() {
         setLoading(false);
         if (result.data.data.length == 0) {
           dispatch(setOpen(true));
-          dispatch(setPostCheck(7));
+          dispatch(
+            setPostCheck({ message: "찾으시는 추억이 없습니다", url: "" })
+          );
           dispatch(setInputSearch(""));
           search.current.value = "";
         } else {
@@ -269,29 +295,28 @@ function App() {
 
   return (
     <>
-      <Header
-        MyModal={
-          <MyModal
-            isOpen={isOpen}
-            onSubmit={handleModalSubmit}
-            onRequestClose={handleRequestCancel}
-            postCheck={postCheck}
-          />
-        }
-        show={show}
-        handleShow={handleShow}
-        handleHide={handleHide}
-        reset={reset}
-      />
+      {accessToken ? (
+        <Header
+          show={show}
+          handleShow={handleShow}
+          handleHide={handleHide}
+          reset={reset}
+        />
+      ) : (
+        ""
+      )}
+
       <Container style={{ paddingBottom: "80px", overflow: "hidden" }}>
-        <TransitionGroup>
+        {/* <TransitionGroup>
           <CSSTransition
             key={location.key}
             {...slideTransition}
             mountOnEnter={false}
             unmountOnExit={true}
-          >
-            <Routes>
+          > */}
+        <Routes>
+          {accessToken ? (
+            <>
               <Route
                 path="/"
                 element={
@@ -318,13 +343,28 @@ function App() {
                 }
               ></Route>
               <Route path="/list" element={<List />}></Route>
+              <Route path="/profile" element={<Profile />}></Route>
               <Route path="*" element={<NotFound />}></Route>
-            </Routes>
-          </CSSTransition>
-        </TransitionGroup>
+            </>
+          ) : (
+            <>
+              <Route path="/" element={<SignIn />}></Route>
+              <Route path="/signIn" element={<SignIn />}></Route>
+              <Route path="/signUp" element={<SignUp />}></Route>
+            </>
+          )}
+        </Routes>
+        {/* </CSSTransition>
+        </TransitionGroup> */}
       </Container>
-      <Footer />
+      {accessToken ? <Footer /> : ""}
+
       {loading ? <Loading /> : null}
+      <MyModal
+        isOpen={isOpen}
+        onSubmit={handleModalSubmit}
+        onRequestClose={handleRequestCancel}
+      />
     </>
   );
 }

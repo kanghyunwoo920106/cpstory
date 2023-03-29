@@ -4,23 +4,91 @@ const app = express();
 const router = express.Router();
 const db = require("./database/db_connect");
 const multer = require("multer");
-// const cors = require("cors");
+const bodyParser = require("body-parser");
 app.use(express.json());
-// app.use(cors());
+app.use(bodyParser.json());
 
-// app.use(cors({
-//   origin: ['http://localhost:3000','http://localhost:8000'],
-//   credentials: true,
-//   optionsSuccessStatus: 200
-// }));
+const jwt = require("jsonwebtoken");
+const secretKey = "mysecretkey";
 
 app.use(express.static(path.join(__dirname, "/build")));
 
-// app.get("/", function (req, res, next) {
-//   res.sendFile(path.join(__dirname, "/build/index.html"));
-// });
+app.get("/", function (req, res, next) {
+  // res.sendFile(path.join(__dirname, "/build/index.html"));
+  res.send({ message: "ok" });
+});
 
-app.get("/getinfo", function (req, res, next) {
+app.post("/insert/signup", (req, res) => {
+  try {
+    const { firstName, lastName, id, password } = req.body;
+
+    db.query(
+      `INSERT INTO member(firstName,lastName, id, password) VALUES('${firstName}','${lastName}','${id}','${password}')`,
+      function (err, data) {
+        if (!err) {
+          res.send({ memberData: data });
+        } else {
+          console.log(err);
+        }
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/login", function (req, res) {
+  const { id, password } = req.body;
+  db.query(
+    `SELECT * FROM member WHERE id = '${id}' AND password = '${password}'`,
+    function (err, data) {
+      if (err) {
+        res.status(500).send({ status: 500, message: "internal server error" });
+      } else if (data.length === 0) {
+        res.status(401).send({ status: 401, message: "unauthorized" });
+      } else {
+        // JWT 발급
+        const accessToken = jwt.sign({ id: data[0].id }, secretKey, {
+          expiresIn: "1h",
+        });
+        res.cookie("access_token", accessToken, {
+          httpOnly: true,
+          secure: true,
+        });
+        res.send({
+          status: 200,
+          message: "success",
+          accessToken: accessToken,
+          member: data,
+        });
+      }
+    }
+  );
+});
+
+app.get("/auth", function (req, res) {
+  // JWT 검증
+  const accessToken = req.cookies.access_token;
+  try {
+    const decoded = jwt.verify(accessToken, secretKey);
+    const userId = decoded.id;
+
+    // 사용자 정보 반환
+    db.query(
+      `SELECT * FROM member WHERE id = '${userId}'`,
+      function (err, data) {
+        if (!err) {
+          res.send({ status: 200, message: "success", user: data });
+        }
+      }
+    );
+  } catch (err) {
+    res.status(401).send({ status: 401, message: "unauthorized" });
+  }
+});
+
+app.get("/get/info", function (req, res, next) {
   db.query("SELECT * FROM app_info", function (err, data) {
     if (!err) {
       res.send({ status: 200, message: "success", app_info: data });
@@ -28,7 +96,7 @@ app.get("/getinfo", function (req, res, next) {
   });
 });
 
-app.post("/updateinfo", (req, res) => {
+app.post("/update/info", (req, res) => {
   db.query(
     `UPDATE app_info SET app_name = '${req.body.appTitle}' WHERE idx=1`,
 
@@ -39,7 +107,7 @@ app.post("/updateinfo", (req, res) => {
   );
 });
 
-app.get("/getdata", function (req, res) {
+app.get("/get/data", function (req, res) {
   db.query("SELECT * FROM data order by startdate DESC", function (err, data) {
     if (!err) {
       res.send({ photodata: data });
@@ -52,10 +120,9 @@ app.get("/getdata", function (req, res) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // cb(null, "../client/public/upload/"); //로컬
-    cb(null, "./build/upload/"); //서버
+    // cb(null, "../client/public/upload");
 
-    // cb(null, "./upload/");
+    cb(null, "./upload/");
   },
   filename: (req, file, cb) => {
     const newFileName = file.originalname;
@@ -65,7 +132,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/insert", upload.array("image"), (req, res) => {
+app.post("/insert/post", upload.array("image"), (req, res) => {
   try {
     const { title, description, startdate, enddate, address } = req.body;
     const images = req.files.map((file) => file.filename);

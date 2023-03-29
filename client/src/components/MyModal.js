@@ -1,10 +1,18 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import ReactModal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, useNavigate } from "react-router-dom";
+import { setPostCheck } from "../store/store.js";
 
-const MyModal = ({ isOpen, onSubmit, onRequestClose, postCheck }) => {
+const MyModal = ({ isOpen, onSubmit, onRequestClose }) => {
+  const { postCheck } = useSelector((state) => state);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const handleClick = () => {
     onSubmit();
+    navigate(`/${postCheck.url}`);
   };
 
   return (
@@ -42,7 +50,7 @@ const MyModal = ({ isOpen, onSubmit, onRequestClose, postCheck }) => {
           },
         }}
       >
-        {postCheck == 0 ? (
+        {/* {postCheck == 0 ? (
           <p style={{ flexGrow: 2, lineHeight: "80px" }}>
             추억이 등록되었습니다.
           </p>
@@ -72,7 +80,9 @@ const MyModal = ({ isOpen, onSubmit, onRequestClose, postCheck }) => {
           <p style={{ flexGrow: 2, lineHeight: "80px" }}>
             찾으시는 추억이 없습니다.
           </p>
-        )}
+        )} */}
+
+        <p style={{ flexGrow: 2, lineHeight: "80px" }}>{postCheck.message}</p>
 
         <Button
           className="d-grid gap-2"

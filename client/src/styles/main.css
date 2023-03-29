@@ -263,7 +263,7 @@
 }
 
 .popover {
-  height: 200px;
+  height: 250px;
   overflow-y: scroll;
   width: 94%;
   max-width: 100%;
@@ -294,7 +294,6 @@
   align-items: center;
 }
 .footer ul svg {
-  font-size: 1.4rem;
   color: #000;
 }
 
