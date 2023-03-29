@@ -71,7 +71,7 @@ export default function SignIn() {
         ] = `Bearer ${accessToken}`;
 
         dispatch(setLoading(false));
-        // navigate("/");
+        navigate("/");
         // dispatch(setOpen(false));
         // dispatch(setPostCheck({ message: "로그인이 되었습니다.", url: "" }));
       })
