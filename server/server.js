@@ -128,7 +128,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // cb(null, "../client/public/upload");
 
-    cb(null, "./upload/");
+    cb(null, "./build/upload/"); //서버
   },
   filename: (req, file, cb) => {
     const newFileName = file.originalname;
