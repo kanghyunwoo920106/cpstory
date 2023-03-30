@@ -138,27 +138,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/api/insert/post", upload.array("image"), async (req, res) => {
+app.post("/api/insert/post", upload.array("image"), (req, res) => {
   try {
     const { title, description, startdate, enddate, address } = req.body;
     const images = req.files.map((file) => file.filename);
 
-    const promises = images.map((image) => {
-      return new Promise((resolve, reject) => {
-        db.query(
-          `INSERT INTO photo_data(title,description,image,startdate,enddate,address) VALUES('${title}','${description}','${image}','${startdate}','${enddate}','${address}')`,
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
-            }
-          }
-        );
-      });
-    });
-
-    await Promise.all(promises);
+    for (let i = 0; i < images.length; i++) {
+      db.query(
+        `INSERT INTO data(title,description,image,startdate,enddate,address) VALUES('${title}','${description}','${images[i]}','${startdate}','${enddate}','${address}')`
+      );
+    }
 
     res.send({ status: 200, message: "success" });
   } catch (error) {
