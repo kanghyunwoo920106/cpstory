@@ -145,7 +145,7 @@ app.post("/api/insert/post", upload.array("image"), (req, res) => {
 
     for (let i = 0; i < images.length; i++) {
       db.query(
-        `INSERT INTO data(title,description,image,startdate,enddate,address) VALUES('${title}','${description}','${images[i]}','${startdate}','${enddate}','${address}')`
+        `INSERT INTO photo_data(title,description,image,startdate,enddate,address) VALUES('${title}','${description}','${images[i]}','${startdate}','${enddate}','${address}')`
       );
     }
 
