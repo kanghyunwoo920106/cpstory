@@ -246,6 +246,7 @@ function App() {
             if (fileInput && fileInput.current) {
               fileInput.current.value = "";
             }
+            getPhotoData();
             navigate("/");
           })
           .catch((error) => {
