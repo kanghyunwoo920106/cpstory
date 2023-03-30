@@ -64,7 +64,7 @@ export default function SignUp() {
       dispatch(setLoading(true));
 
       await axios
-        .post("/insert/signup", data, { withCredentials: true })
+        .post("/api/insert/signup", data, { withCredentials: true })
         .then((result) => {
           dispatch(setLoading(false));
           dispatch(setOpen(true));

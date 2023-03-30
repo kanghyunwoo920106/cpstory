@@ -4,9 +4,12 @@ const app = express();
 const router = express.Router();
 const db = require("./database/db_connect");
 const multer = require("multer");
+const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 const jwt = require("jsonwebtoken");
 const secretKey = "mysecretkey";
@@ -18,7 +21,7 @@ app.get("/", function (req, res, next) {
   res.send({ message: "ok" });
 });
 
-app.post("/insert/signup", (req, res) => {
+app.post("/api/insert/signup", (req, res) => {
   try {
     const { firstName, lastName, id, password } = req.body;
 
@@ -38,7 +41,7 @@ app.post("/insert/signup", (req, res) => {
   }
 });
 
-app.post("/login", function (req, res) {
+app.post("/api/login", function (req, res) {
   const { id, password } = req.body;
   db.query(
     `SELECT * FROM member WHERE id = '${id}' AND password = '${password}'`,
@@ -67,7 +70,7 @@ app.post("/login", function (req, res) {
   );
 });
 
-app.get("/auth", function (req, res) {
+app.get("/api/auth", function (req, res) {
   // JWT 검증
   const accessToken = req.cookies.access_token;
   try {
@@ -88,7 +91,7 @@ app.get("/auth", function (req, res) {
   }
 });
 
-app.get("/get/info", function (req, res, next) {
+app.get("/api/get/info", function (req, res, next) {
   db.query("SELECT * FROM app_info", function (err, data) {
     if (!err) {
       res.send({ status: 200, message: "success", app_info: data });
@@ -96,7 +99,7 @@ app.get("/get/info", function (req, res, next) {
   });
 });
 
-app.post("/update/info", (req, res) => {
+app.post("/api/update/info", (req, res) => {
   db.query(
     `UPDATE app_info SET app_name = '${req.body.appTitle}' WHERE idx=1`,
 
@@ -107,15 +110,18 @@ app.post("/update/info", (req, res) => {
   );
 });
 
-app.get("/get/data", function (req, res) {
-  db.query("SELECT * FROM data order by startdate DESC", function (err, data) {
-    if (!err) {
-      res.send({ photodata: data });
-    } else {
-      console.log(`err:` + err);
-      res.send(err);
+app.get("/api/get/photodata", function (req, res) {
+  db.query(
+    "SELECT * FROM photo_data order by startdate DESC",
+    function (err, data) {
+      if (!err) {
+        res.send({ photodata: data });
+      } else {
+        console.log(`err:` + err);
+        res.send(err);
+      }
     }
-  });
+  );
 });
 
 const storage = multer.diskStorage({
@@ -132,16 +138,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/insert/post", upload.array("image"), (req, res) => {
+app.post("/api/insert/post", upload.array("image"), async (req, res) => {
   try {
     const { title, description, startdate, enddate, address } = req.body;
     const images = req.files.map((file) => file.filename);
 
-    for (let i = 0; i < images.length; i++) {
-      db.query(
-        `INSERT INTO data(title,description,image,startdate,enddate,address) VALUES('${title}','${description}','${images[i]}','${startdate}','${enddate}','${address}')`
-      );
-    }
+    const promises = images.map((image) => {
+      return new Promise((resolve, reject) => {
+        db.query(
+          `INSERT INTO photo_data(title,description,image,startdate,enddate,address) VALUES('${title}','${description}','${image}','${startdate}','${enddate}','${address}')`,
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+      });
+    });
+
+    await Promise.all(promises);
 
     res.send({ status: 200, message: "success" });
   } catch (error) {
@@ -150,9 +167,9 @@ app.post("/insert/post", upload.array("image"), (req, res) => {
   }
 });
 
-app.post("/search", (req, res) => {
+app.post("/api/search", (req, res) => {
   db.query(
-    `SELECT * FROM data WHERE title LIKE '%${req.body.keyword}%' OR description LIKE '%${req.body.keyword}%'`,
+    `SELECT * FROM photo_data WHERE title LIKE '%${req.body.keyword}%' OR description LIKE '%${req.body.keyword}%'`,
     (err, data) => {
       if (!err) res.send({ state: "200", message: "success", data: data });
       else res.send(err);
@@ -160,22 +177,25 @@ app.post("/search", (req, res) => {
   );
 });
 
-app.post("/delete", (req, res) => {
-  db.query(`DELETE FROM data WHERE idx = '${req.body.idx}'`, (err, data) => {
-    if (!err) res.send({ state: "200", messsage: "success", result: data });
-    else res.send(err);
-  });
+app.post("/api/delete", (req, res) => {
+  db.query(
+    `DELETE FROM photo_data WHERE idx = '${req.body.idx}'`,
+    (err, data) => {
+      if (!err) res.send({ state: "200", messsage: "success", result: data });
+      else res.send(err);
+    }
+  );
 });
 
-app.get("/reset", (req, res) => {
-  db.query(`DELETE FROM data`, (err, data) => {
+app.get("/api/reset", (req, res) => {
+  db.query(`DELETE FROM photo_data`, (err, data) => {
     if (!err) res.send({ state: "200", message: "success", result: data });
     else res.send(err);
   });
   db.query(`DELETE FROM diary`);
 });
 
-app.get("/get/diary", function (req, res) {
+app.get("/api/get/diary", function (req, res) {
   db.query("SELECT * FROM diary order by date DESC", function (err, data) {
     if (!err) {
       res.send({ diarydata: data });
@@ -186,7 +206,7 @@ app.get("/get/diary", function (req, res) {
   });
 });
 
-app.post("/insert/diary", (req, res) => {
+app.post("/api/insert/diary", (req, res) => {
   try {
     const { diaryKey, diary, date } = req.body;
     db.query(
@@ -203,7 +223,7 @@ app.post("/insert/diary", (req, res) => {
   }
 });
 
-app.post("/update/diary", (req, res) => {
+app.post("/api/update/diary", (req, res) => {
   const { diaryKey, diary } = req.body;
 
   db.query(
@@ -216,7 +236,7 @@ app.post("/update/diary", (req, res) => {
   );
 });
 
-app.post("/delete/diary", (req, res) => {
+app.post("/api/delete/diary", (req, res) => {
   const { diaryKey } = req.body;
 
   db.query(`DELETE FROM diary WHERE diaryKey = '${diaryKey}'`, (err, data) => {

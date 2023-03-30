@@ -11,13 +11,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  setAccessToken,
-  setAuthenticated,
-  setLoading,
-  setOpen,
-  setPostCheck,
-} from "../store/store.js";
+import { setLoading, setOpen, setPostCheck } from "../store/store.js";
 import { useDispatch, useSelector } from "react-redux";
 
 function Copyright(props) {
@@ -58,13 +52,10 @@ export default function SignIn() {
 
     dispatch(setLoading(true));
     await axios
-      .post("/login", { id, password }, { withCredentials: true })
+      .post("/api/login", { id, password }, { withCredentials: true })
       .then((res) => {
         const { accessToken } = res.data;
         localStorage.setItem("access_token", accessToken);
-
-        dispatch(setAccessToken(accessToken));
-        dispatch(setAuthenticated(true));
 
         axios.defaults.headers.common[
           "Authorization"
@@ -72,8 +63,6 @@ export default function SignIn() {
 
         dispatch(setLoading(false));
         navigate("/");
-        // dispatch(setOpen(false));
-        // dispatch(setPostCheck({ message: "로그인이 되었습니다.", url: "" }));
       })
       .catch((error) => {
         dispatch(setLoading(false));

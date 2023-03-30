@@ -1,11 +1,12 @@
 import React from "react";
-
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import {
   createTheme,
   ThemeProvider,
   makeStyles,
 } from "@material-ui/core/styles";
+import { setUserData } from "../store/store.js";
+import { useSelector } from "react-redux";
 
 const theme = createTheme();
 const useStyles = makeStyles((theme) => ({
@@ -24,6 +25,8 @@ const useStyles = makeStyles((theme) => ({
 
 function Profile(props) {
   const classes = useStyles();
+  const { userData, datas } = useSelector((state) => state);
+  console.log(userData);
   return (
     <div className={classes.root}>
       {/* <Typography variant="h4">John Doe</Typography>
@@ -33,6 +36,7 @@ function Profile(props) {
         experience. I love programming and building cool stuff with React and
         Material UI!
       </Typography> */}
+      id: {userData.id}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
   setModalOpen,
   setDiary,
 } from "../store/store.js";
+import { GetDiaryData } from "./GetDiaryData.js";
 
 const Modal = (props) => {
   const { opens, close, header, selectedDate } = props;
@@ -17,6 +18,10 @@ const Modal = (props) => {
   const dispatch = useDispatch();
   const inputDiary = useRef(null);
 
+  const getDiaryData = async () => {
+    await GetDiaryData(dispatch);
+  };
+
   const changeDiary = (e) => {
     dispatch(setDiary(e.target.value));
   };
@@ -24,7 +29,7 @@ const Modal = (props) => {
   const handleCreate = () => {
     if (inputDiary.current.value != "") {
       axios
-        .post("/insert/diary", {
+        .post("/api/insert/diary", {
           diaryKey: diaryKey,
           diary: diary,
           date: format(selectedDate, "yyyy-MM-dd"),
@@ -35,6 +40,7 @@ const Modal = (props) => {
             setPostCheck({ message: "일기가 등록되었습니다.", url: "" })
           );
           dispatch(setModalOpen(false));
+          getDiaryData();
         })
         .catch((error) => {
           console.log(error);
@@ -53,7 +59,7 @@ const Modal = (props) => {
 
   const handleEdit = () => {
     axios
-      .post("/update/diary", {
+      .post("/api/update/diary", {
         diaryKey: diaryKey,
         diary: diary,
       })
@@ -61,6 +67,7 @@ const Modal = (props) => {
         dispatch(setOpen(true));
         dispatch(setPostCheck({ message: "일기가 수정되었습니다", url: "" }));
         dispatch(setModalOpen(false));
+        getDiaryData();
       })
       .catch((error) => {
         console.log(error);
@@ -69,13 +76,19 @@ const Modal = (props) => {
 
   const handleDelete = () => {
     axios
-      .post("/delete/diary", {
+      .post("/api/delete/diary", {
         diaryKey: diaryKey,
       })
       .then((result) => {
         dispatch(setOpen(true));
-        dispatch(setPostCheck({ message: "일기가 삭제되었습니다", url: "" }));
+        dispatch(
+          setPostCheck({
+            message: "일기가 삭제되었습니다",
+            url: "",
+          })
+        );
         dispatch(setModalOpen(false));
+        getDiaryData();
       })
       .catch((error) => {
         console.log(error);

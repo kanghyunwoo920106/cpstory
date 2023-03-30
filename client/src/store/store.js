@@ -26,9 +26,8 @@ const initialState = {
   diaryData: [],
   modalOpen: false,
   diaryKey: 0,
-  accessToken: "",
-  authenticated: false,
   memberInfo: { id: "" },
+  userData: { firstName: "", lastName: "", id: "", password: "" },
 };
 // 액션 타입 정의
 const SET_DATAS = "SET_DATAS";
@@ -50,9 +49,8 @@ const SET_DIARY = "SET_DIARY";
 const SET_DIARYDATA = "SET_DIARYDATA";
 const SET_MODALOPEN = "SET_MODALOPEN";
 const SET_DIARYKEY = "SET_DIARYKEY";
-const SET_ACCESSTOKEN = "SET_ACCESSTOKEN";
-const SET_AUTHENTICATED = "SET_AUTHENTICATED";
 const SET_MEMBERINFO = "SET_MEMBERINFO";
+const SET_USERDATA = "SET_USERDATA";
 
 // 액션 생성 함수 정의
 export const setDatas = (datas) => ({
@@ -151,19 +149,14 @@ export const setDiaryKey = (diaryKey) => ({
   diaryKey,
 });
 
-export const setAccessToken = (accessToken) => ({
-  type: SET_ACCESSTOKEN,
-  accessToken,
-});
-
-export const setAuthenticated = (authenticated) => ({
-  type: SET_AUTHENTICATED,
-  authenticated,
-});
-
 export const setMemberInfo = (memberInfo) => ({
   type: SET_MEMBERINFO,
   memberInfo,
+});
+
+export const setUserData = (userData) => ({
+  type: SET_USERDATA,
+  userData,
 });
 
 // 리듀서 함수 정의
@@ -264,20 +257,15 @@ const reducer = (state = initialState, action) => {
         ...state,
         diaryKey: action.diaryKey,
       };
-    case SET_ACCESSTOKEN:
-      return {
-        ...state,
-        accessToken: action.accessToken,
-      };
-    case SET_AUTHENTICATED:
-      return {
-        ...state,
-        authenticated: action.authenticated,
-      };
     case SET_MEMBERINFO:
       return {
         ...state,
         memberInfo: action.memberInfo,
+      };
+    case SET_USERDATA:
+      return {
+        ...state,
+        userData: action.userData,
       };
 
     default:

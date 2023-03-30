@@ -18,7 +18,7 @@ function MainSlide(props) {
     <Carousel
       activeIndex={index}
       onSelect={handleSelect}
-      interval="3333333000"
+      interval={null}
       indicators={false}
       className="main-box"
     >

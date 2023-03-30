@@ -8,6 +8,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   setAccessToken,
   setAuthenticated,
@@ -15,19 +16,21 @@ import {
   setLoading,
   setOpen,
   setPostCheck,
+  setUserData,
 } from "../store/store.js";
+import { removeToken } from "../utils/auth";
+
 function Header(props) {
   const { show, handleShow, handleHide, reset } = props;
   const [appTitle, setAppTitle] = useState("");
   const [editStatus, setEditStatus] = useState(false);
   const title = useRef();
-  const { memberInfo } = useSelector((state) => state);
-  const [cookies, setCookie, removeCookie] = useCookies(["access_token"]);
+  const { memberInfo, userData } = useSelector((state) => state);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const getInfo = async () => {
-    const result = await axios.get("/get/info");
+    const result = await axios.get("/api/get/info");
     setAppTitle(result.data.app_info[0].app_name);
   };
 
@@ -45,7 +48,7 @@ function Header(props) {
     if (title.current.readOnly == false) {
       title.current.style = "border: none";
       await axios
-        .post("/update/info", { appTitle: appTitle })
+        .post("/api/update/info", { appTitle: appTitle })
         .then((result) => {
           title.current.readOnly = true;
         });
@@ -60,10 +63,7 @@ function Header(props) {
   const handleLogout = async (e) => {
     e.preventDefault();
 
-    // dispatch(setOpen(true));
-    // dispatch(setPostCheck({ message: "로그아웃이 되었습니다.", url: "" }));
-    localStorage.removeItem("access_token");
-    dispatch(setOpen(false));
+    removeToken();
     navigate("/");
   };
 
@@ -71,7 +71,9 @@ function Header(props) {
     <div>
       <Navbar key="md" bg="light" expand="md" className="mb-3">
         <Container fluid>
-          <Navbar.Brand href="/">{appTitle}</Navbar.Brand>
+          <NavLink to="/" className="logo_title">
+            <Navbar.Brand>{appTitle}</Navbar.Brand>
+          </NavLink>
 
           <Navbar.Toggle
             aria-controls="offcanvasNavbar-expand-md"

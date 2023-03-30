@@ -28,7 +28,7 @@ function List(props) {
           );
         })
       ) : (
-        <div>추억을 등록해주세요.</div>
+        <div>추억을 등록해주세요</div>
       )}
     </Container>
   );

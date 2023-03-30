@@ -12,7 +12,9 @@ import MyModal from "./components/MyModal";
 import NotFound from "./components/NotFound";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, connect } from "react-redux";
+import { GetPhotoData } from "./components/GetPhotoData";
+import { GetDiaryData } from "./components/GetDiaryData.js";
 import {
   setDatas,
   setInput,
@@ -27,6 +29,7 @@ import {
   setLoading,
   setDiaryData,
   setAuthenticated,
+  setUserData,
 } from "./store/store.js";
 import Loading from "./components/Loading";
 import SignIn from "./page/SignIn";
@@ -37,7 +40,6 @@ function App() {
   const search = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
   const accessToken = localStorage.getItem("access_token");
 
   const {
@@ -46,57 +48,53 @@ function App() {
     image,
     showImages,
     isOpen,
-    postCheck,
     show,
     inputSearch,
     date,
     searchMap,
     info,
     loading,
+    postCheck,
     authenticated,
+    userData,
   } = useSelector((state) => state);
 
-  // useEffect(() => {
-  //   const accessToken = localStorage.getItem("access_token");
-  //   console.log(accessToken);
-  //   if (!accessToken) {
-  //     dispatch(setAuthenticated(false));
-  //   } else {
-  //     axios
-  //       .get("/auth", { headers: { Authorization: `Bearer ${accessToken}` } })
-  //       .then(() => {
-  //         dispatch(setAuthenticated(true));
-  //       })
-  //       .catch(() => {
-  //         dispatch(setAuthenticated(false));
-  //       });
-  //   }
-  // }, []);
-
-  const fetchData = async () => {
-    try {
-      const result = await axios.get("/get/data");
-
-      dispatch(setDatas(result.data.photodata));
-      dispatch(setLoading(false));
-    } catch (error) {
-      console.error(error);
-    }
+  const getPhotoData = async () => {
+    await GetPhotoData(dispatch);
   };
 
-  const fetchDiaryData = async () => {
-    try {
-      const result = await axios.get("/get/diary");
-      dispatch(setDiaryData(result.data.diarydata));
-    } catch (error) {
-      console.error(error);
-    }
+  const getDiaryData = async () => {
+    await GetDiaryData(dispatch);
   };
+
+  // 포토 데이터 fetch
+  useEffect(() => {
+    getPhotoData();
+  }, []);
+
+  // 한줄 메모장 fetch
+  useEffect(() => {
+    getDiaryData();
+  }, []);
 
   useEffect(() => {
-    dispatch(setLoading(true));
-    fetchData();
-    fetchDiaryData();
+    const getUserData = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        navigate("/");
+      }
+
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      await axios.get("/api/auth", config).then((result) => {
+        console.log(result.data.user);
+        dispatch(setUserData(result.data.user));
+      });
+    };
+
+    getUserData();
   }, []);
 
   const reset = async (e) => {
@@ -111,7 +109,7 @@ function App() {
           dispatch(setShow(false));
           dispatch(setInput({ title: "", description: "" }));
           dispatch(setSearchMap(""));
-          fetchData();
+          getPhotoData();
         })
         .catch((error) => {
           console.log(error);
@@ -124,14 +122,10 @@ function App() {
   const handleModalSubmit = () => {
     dispatch(setOpen(false));
     dispatch(setShowImages([]));
-    fetchData();
-    fetchDiaryData();
   };
 
   const handleRequestCancel = () => {
     dispatch(setOpen(false));
-    fetchData();
-    fetchDiaryData();
   };
 
   const handleShow = () => {
@@ -155,10 +149,11 @@ function App() {
   const deleteImgHandle = async (idx) => {
     try {
       await axios
-        .post("/delete", { idx: idx })
+        .post("/api/delete", { idx: idx })
         .then((result) => {
           dispatch(setOpen(true));
           dispatch(setPostCheck({ message: "이미지를 삭제했습니다", url: "" }));
+          getPhotoData();
         })
         .catch((err) => {
           console.error(err);
@@ -217,7 +212,6 @@ function App() {
           })
         );
         dispatch(setShow(false));
-        return;
       } else {
         formData.append("title", input.title);
         formData.append("description", input.description);
@@ -234,7 +228,11 @@ function App() {
 
         dispatch(setLoading(true));
         await axios
-          .post("/insert/post", formData)
+          .post("/api/insert/post", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
           .then(() => {
             dispatch(setLoading(false));
             dispatch(setOpen(true));
@@ -265,15 +263,18 @@ function App() {
 
   const handleSearch = async (e) => {
     setLoading(true);
-    console.log(inputSearch);
+
     await axios
-      .post("/search", { keyword: inputSearch })
+      .post("/api/search", { keyword: inputSearch })
       .then((result) => {
         setLoading(false);
         if (result.data.data.length == 0) {
           dispatch(setOpen(true));
           dispatch(
-            setPostCheck({ message: "찾으시는 추억이 없습니다", url: "" })
+            setPostCheck({
+              message: `${inputSearch} 찾으시는 추억이 없습니다`,
+              url: "",
+            })
           );
           dispatch(setInputSearch(""));
           search.current.value = "";
@@ -281,6 +282,14 @@ function App() {
           dispatch(setDatas(result.data.data));
           dispatch(setInputSearch(""));
           search.current.value = "";
+          dispatch(setOpen(true));
+          dispatch(
+            setPostCheck({
+              message: `${inputSearch} 추억이 검색되었습니다`,
+              url: "",
+            })
+          );
+          getPhotoData();
         }
       })
       .catch((error) => {
