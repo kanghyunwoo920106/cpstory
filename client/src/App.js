@@ -101,7 +101,7 @@ function App() {
     dispatch(setLoading(true));
     try {
       await axios
-        .get("/reset")
+        .get("/api/reset")
         .then(() => {
           dispatch(setLoading(false));
           dispatch(setOpen(true));
