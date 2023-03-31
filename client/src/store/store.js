@@ -7,15 +7,11 @@ const initialState = {
   input: { title: "", description: "" },
   image: [],
   showImages: [],
-  isOpen: false,
+  open: false,
   postCheck: { message: "", url: "" },
   show: false,
   inputSearch: "",
-  date: {
-    startDate: new Date(),
-    endDate: new Date(),
-    key: "selection",
-  },
+  date: new Date(),
   searchMap: "분당맛집",
   markers: [],
   info: "",
@@ -73,9 +69,9 @@ export const setShowImages = (showImages) => ({
   showImages,
 });
 
-export const setOpen = (isOpen) => ({
+export const setOpen = (open) => ({
   type: SET_OPEN,
-  isOpen,
+  open,
 });
 
 export const setPostCheck = (postCheck) => ({
@@ -185,7 +181,7 @@ const reducer = (state = initialState, action) => {
     case SET_OPEN:
       return {
         ...state,
-        isOpen: action.isOpen,
+        open: action.open,
       };
     case SET_POST_CHECK:
       return {

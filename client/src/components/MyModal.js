@@ -1,97 +1,46 @@
-import React from "react";
-import { Button } from "react-bootstrap";
-import ReactModal from "react-modal";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useNavigate } from "react-router-dom";
-import { setPostCheck } from "../store/store.js";
+import { useNavigate } from "react-router-dom";
 
-const MyModal = ({ isOpen, onSubmit, onRequestClose }) => {
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import { setOpen } from "../store/store.js";
+
+const MyModal = ({ onSubmit, onRequestClose }) => {
   const { postCheck } = useSelector((state) => state);
+  const { open } = useSelector((state) => state);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const handleClick = () => {
-    onSubmit();
-    navigate(`/${postCheck.url}`);
+  const handleClose = () => dispatch(setOpen(false));
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    textAlign: "center",
   };
 
   return (
     <div>
-      <ReactModal
-        isOpen={isOpen}
-        onRequestClose={onRequestClose}
-        style={{
-          overlay: {
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.75)",
-            zIndex: 10,
-          },
-          content: {
-            position: "absolute",
-            top: "235px",
-            left: "40px",
-            right: "40px",
-            bottom: "235px",
-            border: "1px solid #ccc",
-            background: "#fff",
-            overflow: "auto",
-            WebkitOverflowScrolling: "touch",
-            borderRadius: "4px",
-            outline: "none",
-            padding: "20px",
-            display: "flex",
-            alignItems: "center",
-            flexFlow: "column",
-            justifyContent: "space-between",
-          },
-        }}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
       >
-        {/* {postCheck == 0 ? (
-          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
-            추억이 등록되었습니다.
-          </p>
-        ) : postCheck == 1 ? (
-          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
-            등록을 실패했습니다. 다시 등록해주세요
-          </p>
-        ) : postCheck == 2 ? (
-          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
-            이미지를 삭제했습니다.
-          </p>
-        ) : postCheck == 3 ? (
-          <p style={{ flexGrow: 2, lineHeight: "80px" }}>초기화 되었습니다.</p>
-        ) : postCheck == 4 ? (
-          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
-            한줄 일기가 등록되었습니다.
-          </p>
-        ) : postCheck == 5 ? (
-          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
-            한줄 일기가 수정되었습니다.
-          </p>
-        ) : postCheck == 6 ? (
-          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
-            한줄 일기가 삭제되었습니다.
-          </p>
-        ) : (
-          <p style={{ flexGrow: 2, lineHeight: "80px" }}>
-            찾으시는 추억이 없습니다.
-          </p>
-        )} */}
-
-        <p style={{ flexGrow: 2, lineHeight: "80px" }}>{postCheck.message}</p>
-
-        <Button
-          className="d-grid gap-2"
-          onClick={handleClick}
-          style={{ width: "100%", bottom: 0, transition: "all .2s" }}
-        >
-          확인
-        </Button>
-      </ReactModal>
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            {postCheck.message}
+          </Typography>
+        </Box>
+      </Modal>
     </div>
   );
 };

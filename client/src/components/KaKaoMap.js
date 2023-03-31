@@ -1,6 +1,6 @@
 /*global kakao*/
 import React, { useEffect, useState, useRef } from "react";
-import { Button, Form } from "react-bootstrap";
+// import { Button, Form } from "react-bootstrap";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,7 +11,13 @@ import {
   setPopShow,
 } from "../store/store.js";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Popover from "react-bootstrap/Popover";
+// import Popover from "react-bootstrap/Popover";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Popover from "@mui/material/Popover";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 function KaKaoMap() {
   const { kakao } = window;
@@ -55,19 +61,52 @@ function KaKaoMap() {
     }
   }, [searchMap]);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
   const mapChange = (e) => {
     dispatch(setSearchMap(e.target.value));
-    if (search.current.value == "") {
-      dispatch(setPopShow(false));
+
+    if (search.current.value === "") {
+      setAnchorEl(null); // 팝업을 닫음
+      setPopShow(false);
     } else {
-      dispatch(setPopShow(true));
+      setAnchorEl(search.current); // 검색 필드를 기준으로 팝업 위치를 설정
+      setPopShow(true);
     }
   };
 
-  const popover = (
-    <Popover id="popover-basic">
-      <Popover.Header as="h3">검색추천장소</Popover.Header>
-      <Popover.Body>
+  return (
+    <>
+      <Box sx={{ maxWidth: "100%" }} mt={2}>
+        <TextField
+          fullWidth
+          label="장소검색"
+          id="fullWidth"
+          onChange={mapChange}
+          ref={search}
+          aria-describedby={id}
+        />
+      </Box>
+
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        variant="popover"
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+      >
+        {/* <Typography sx={{ p: 2 }}> */}
         {address.map((data, index) => {
           return (
             <ul className="address-list-wrap" key={index}>
@@ -88,27 +127,8 @@ function KaKaoMap() {
             </ul>
           );
         })}
-      </Popover.Body>
-    </Popover>
-  );
-
-  return (
-    <>
-      <Form.Group className="mt-3 mb-3">
-        <OverlayTrigger
-          show={popShow}
-          trigger="click"
-          placement="bottom-start"
-          overlay={popover}
-        >
-          <Form.Control
-            type="text"
-            onChange={mapChange}
-            placeholder="장소검색"
-            ref={search}
-          />
-        </OverlayTrigger>
-      </Form.Group>
+        {/* </Typography> */}
+      </Popover>
       <Map
         center={{
           lat: 37.566826,

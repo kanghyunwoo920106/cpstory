@@ -1,26 +1,41 @@
 import React, { useRef } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Nav from "react-bootstrap/Nav";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import InputBase from "@mui/material/InputBase";
+import SearchIcon from "@mui/icons-material/Search";
 
 function Search(props) {
   const { changeSearch, handleSearch, search } = props;
   return (
     <div className="search-wraper main-box">
-      <Form.Label>추억 검색</Form.Label>
-      <Form className="d-flex">
-        <Form.Control
-          type="search"
-          placeholder="Search"
-          className="me-2"
-          aria-label="Search"
+      <Paper
+        component="form"
+        sx={{
+          p: "2px 4px",
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          placeholder="검색"
+          inputProps={{ "aria-label": "검색" }}
           onChange={changeSearch}
           ref={search}
         />
-        <Button variant="outline-success" onClick={handleSearch}>
-          Search
-        </Button>
-      </Form>
+        <IconButton
+          type="button"
+          sx={{ p: "10px" }}
+          aria-label="검색"
+          onClick={handleSearch}
+        >
+          <SearchIcon />
+        </IconButton>
+      </Paper>
     </div>
   );
 }

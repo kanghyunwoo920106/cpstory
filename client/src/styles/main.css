@@ -278,7 +278,7 @@
 
 .address-list-wrap {
   border-bottom: 1px solid #ccc;
-  padding: 15px 0;
+  padding: 15px;
 }
 .address-list-wrap li:nth-child(1) {
   font-weight: bold;

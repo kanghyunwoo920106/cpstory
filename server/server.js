@@ -111,17 +111,14 @@ app.post("/api/update/info", (req, res) => {
 });
 
 app.get("/api/get/photodata", function (req, res) {
-  db.query(
-    "SELECT * FROM photo_data order by startdate DESC",
-    function (err, data) {
-      if (!err) {
-        res.send({ photodata: data });
-      } else {
-        console.log(`err:` + err);
-        res.send(err);
-      }
+  db.query("SELECT * FROM photo_data order by date DESC", function (err, data) {
+    if (!err) {
+      res.send({ photodata: data });
+    } else {
+      console.log(`err:` + err);
+      res.send(err);
     }
-  );
+  });
 });
 
 const storage = multer.diskStorage({
@@ -140,12 +137,12 @@ const upload = multer({ storage: storage });
 
 app.post("/api/insert/post", upload.array("image"), (req, res) => {
   try {
-    const { title, description, startdate, enddate, address } = req.body;
+    const { title, description, date, address } = req.body;
     const images = req.files.map((file) => file.filename);
 
     for (let i = 0; i < images.length; i++) {
       db.query(
-        `INSERT INTO photo_data(title,description,image,startdate,enddate,address) VALUES('${title}','${description}','${images[i]}','${startdate}','${enddate}','${address}')`
+        `INSERT INTO photo_data(title,description,image,date,address) VALUES('${title}','${description}','${images[i]}','${date}','${address}')`
       );
     }
 

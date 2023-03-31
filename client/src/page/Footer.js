@@ -1,58 +1,59 @@
-import React from "react";
-import { BiHomeAlt2, BiCoinStack, BiBellMinus } from "react-icons/bi";
-import { BsList } from "react-icons/bs";
-import { CgAddR, CgProfile } from "react-icons/cg";
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import FolderIcon from "@mui/icons-material/Folder";
+import RestoreIcon from "@mui/icons-material/Restore";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import HomeIcon from "@mui/icons-material/Home";
+import MenuIcon from "@mui/icons-material/Menu";
+import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
-function Footer(props) {
+function Footer() {
+  const [value, setValue] = useState("home");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
   return (
-    <div className="footer">
-      <ul className="container">
-        <li>
-          <NavLink
-            to="/"
-            className={({ isActive }) => {
-              return isActive ? "active" : "";
-            }}
-          >
-            <BiHomeAlt2 />
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/list"
-            className={({ isActive }) => {
-              return isActive ? "active" : "";
-            }}
-          >
-            <BsList />
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/add"
-            className={({ isActive }) => {
-              return isActive ? "active" : "";
-            }}
-          >
-            <CgAddR />
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/profile"
-            className={({ isActive }) => {
-              return isActive ? "active" : "";
-            }}
-          >
-            <CgProfile />
-          </NavLink>
-        </li>
-        <li>
-          <BiBellMinus />
-        </li>
-      </ul>
-    </div>
+    <BottomNavigation
+      variant="bottomNavi"
+      value={value}
+      onChange={handleChange}
+    >
+      <BottomNavigationAction
+        label="Home"
+        value="home"
+        component={Link}
+        to="/"
+        icon={<HomeIcon />}
+      />
+      <BottomNavigationAction
+        label="List"
+        value="list"
+        component={Link}
+        to="/list"
+        icon={<MenuIcon />}
+      />
+      <BottomNavigationAction
+        label="Add"
+        value="add"
+        component={Link}
+        to="/add"
+        icon={<AddBoxOutlinedIcon />}
+      />
+      <BottomNavigationAction
+        label="Folder"
+        value="folder"
+        component={Link}
+        to="/profile"
+        icon={<FolderIcon />}
+      />
+    </BottomNavigation>
   );
 }
 

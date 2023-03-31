@@ -1,77 +1,93 @@
 import React, { useState } from "react";
-import { Button } from "react-bootstrap";
 import Carousel from "react-bootstrap/Carousel";
 import { MdClear } from "react-icons/md";
 import { useSelector } from "react-redux";
+import SwipeableViews from "react-swipeable-views";
+import { autoPlay } from "react-swipeable-views-utils";
+import { makeStyles } from "@mui/styles";
+import { Paper, Box } from "@mui/material";
 
-function MainSlide(props) {
-  const [index, setIndex] = useState(0);
+const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
+
+const useStyles = makeStyles(() => ({
+  root: {
+    maxWidth: 600,
+    position: "relative",
+    overflow: "hidden",
+    margin: "0 auto",
+  },
+  img: {
+    display: "block",
+    maxWidth: "100%",
+    width: "auto",
+  },
+  nav: {
+    position: "absolute",
+    bottom: 0,
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: "50%",
+    background: "#fff",
+    opacity: 0.6,
+    marginRight: 8,
+    cursor: "pointer",
+    transition: "opacity 0.2s",
+    "&.active": {
+      opacity: 1,
+    },
+  },
+  box: {
+    position: "absolute",
+    bottom: "0%",
+    width: "100%",
+    backgroundColor: "rgba(0,0,0,0.7)",
+    padding: "16px 0",
+    textAlign: "center",
+  },
+  center: {
+    textAlign: "center",
+  },
+}));
+
+const MainSlide = (props) => {
+  const classes = useStyles();
+  const [activeStep, setActiveStep] = useState(0);
   const { datas } = useSelector((state) => state);
-
   let { deleteImgHandle } = props;
+  console.log(datas);
 
-  const handleSelect = (selectedIndex, e) => {
-    setIndex(selectedIndex);
+  const handleStepChange = (step) => {
+    setActiveStep(step);
   };
 
   return (
-    <Carousel
-      activeIndex={index}
-      onSelect={handleSelect}
-      interval={null}
-      indicators={false}
-      className="main-box"
-    >
-      {datas.map((data, index) => {
-        return (
-          <Carousel.Item key={data.idx}>
-            <MdClear
-              onClick={() => deleteImgHandle(data.idx)}
-              style={{
-                position: "absolute",
-                right: "3%",
-                top: "3%",
-                cursor: "pointer",
-                zIndex: "10",
-                backgroundColor: "white",
-                borderRadius: "1px",
-                width: "18px",
-                height: "18px",
-                padding: "5px",
-              }}
-              size="20"
-              color="#ff1a0a"
+    <Box className={classes.root}>
+      <SwipeableViews index={activeStep} onChangeIndex={handleStepChange}>
+        {datas.map((data, index) => (
+          <Paper key={data.idx} elevation={0}>
+            <img
+              className="d-block w-100"
+              // src={require(`../../public/upload/${data.image}`)}
+              src={`http://3.34.46.36:8000/upload/${data.image}`}
+              alt="First slide"
             />
-            {data.image.split(".")[1] == "mp4" ? (
-              <video
-                // src={require(`../../public/upload/${data.image}`)}
-                src={`http://3.34.46.36:8000/upload/${data.image}`}
-                loop
-                controls
-                style={{ width: "100%" }}
-              />
-            ) : (
-              <img
-                className="d-block w-100"
-                // src={require(`../../public/upload/${data.image}`)}
-                src={`http://3.34.46.36:8000/upload/${data.image}`}
-                alt="First slide"
-              />
-            )}
-
-            <Carousel.Caption>
+            <div key={data.idx} className={classes.box}>
               <h3>{data.title}</h3>
               <p>{data.description}</p>
               <span className="date">
-                {data.startdate.split("T")[0]} ~ {data.enddate.split("T")[0]} /{" "}
-                {data.address}
+                {data.date.split("T")[0]} / {data.address}
               </span>
-            </Carousel.Caption>
-          </Carousel.Item>
-        );
-      })}
-    </Carousel>
+            </div>
+          </Paper>
+        ))}
+      </SwipeableViews>
+    </Box>
   );
-}
+};
 
 export default MainSlide;

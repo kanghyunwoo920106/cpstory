@@ -1,6 +1,5 @@
 import "bootstrap/dist/css/bootstrap.css";
 import { useEffect, useRef, useState } from "react";
-import { Container } from "react-bootstrap";
 import Header from "./page/Header";
 import List from "./page/List";
 import Add from "./page/Add";
@@ -11,10 +10,15 @@ import axios from "axios";
 import MyModal from "./components/MyModal";
 import NotFound from "./components/NotFound";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { useDispatch, useSelector, connect } from "react-redux";
 import { GetPhotoData } from "./components/GetPhotoData";
 import { GetDiaryData } from "./components/GetDiaryData.js";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import { format } from "date-fns";
+
 import {
   setDatas,
   setInput,
@@ -36,12 +40,41 @@ import SignIn from "./page/SignIn";
 import SignUp from "./page/SignUp";
 
 function App() {
+  const darkTheme = createTheme({
+    palette: {
+      mode: "dark",
+    },
+    components: {
+      MuiPopover: {
+        variants: [
+          {
+            props: { variant: "popover" },
+            style: {
+              padding: "15px",
+            },
+          },
+        ],
+      },
+      MuiBottomNavigation: {
+        variants: [
+          {
+            props: { variant: "bottomNavi" },
+            style: {
+              position: "fixed",
+              bottom: 0,
+              width: "100%",
+            },
+          },
+        ],
+      },
+    },
+  });
+
   const fileInput = useRef();
   const search = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const accessToken = localStorage.getItem("access_token");
-
   const {
     datas,
     input,
@@ -54,6 +87,7 @@ function App() {
     searchMap,
     info,
     loading,
+    open,
     postCheck,
     authenticated,
     userData,
@@ -77,25 +111,25 @@ function App() {
     getDiaryData();
   }, []);
 
-  useEffect(() => {
-    const getUserData = async () => {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        navigate("/");
-      }
+  // useEffect(() => {
+  //   const getUserData = async () => {
+  //     const token = localStorage.getItem("access_token");
+  //     if (!token) {
+  //       navigate("/");
+  //     }
 
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
+  //     const config = {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     };
 
-      await axios.get("/api/auth", config).then((result) => {
-        console.log(result.data.user);
-        dispatch(setUserData(result.data.user));
-      });
-    };
+  //     await axios.get("/api/auth", config).then((result) => {
+  //       console.log(result.data.user);
+  //       dispatch(setUserData(result.data.user));
+  //     });
+  //   };
 
-    getUserData();
-  }, []);
+  //   getUserData();
+  // }, []);
 
   const reset = async (e) => {
     dispatch(setLoading(true));
@@ -136,14 +170,10 @@ function App() {
     dispatch(setShow(false));
   };
 
-  const dateChange = (ranges) => {
-    dispatch(
-      setDate({
-        startDate: ranges["selection"].startDate,
-        endDate: ranges["selection"].endDate,
-        key: ranges["selection"].key,
-      })
-    );
+  // console.log(date);
+  const dateChange = (selectedDate) => {
+    const formattedDate = format(selectedDate.$d, "yyyy-MM-dd");
+    dispatch(setDate(formattedDate));
   };
 
   const deleteImgHandle = async (idx) => {
@@ -215,11 +245,7 @@ function App() {
       } else {
         formData.append("title", input.title);
         formData.append("description", input.description);
-        formData.append(
-          "startdate",
-          date.startDate.toISOString().split("T")[0]
-        );
-        formData.append("enddate", date.endDate.toISOString().split("T")[0]);
+        formData.append("date", date);
         formData.append("address", info.place_name);
 
         for (let i = 0; i < image.length; i++) {
@@ -259,6 +285,7 @@ function App() {
   };
 
   const changeSearch = (e) => {
+    console.log(e.target.value);
     dispatch(setInputSearch(e.target.value));
   };
 
@@ -298,83 +325,74 @@ function App() {
       });
   };
 
-  const slideTransition = {
-    classNames: "slide",
-    timeout: { enter: 700, exit: 400 },
-  };
-
   return (
     <>
-      {accessToken ? (
-        <Header
-          show={show}
-          handleShow={handleShow}
-          handleHide={handleHide}
-          reset={reset}
+      <ThemeProvider theme={darkTheme}>
+        {accessToken ? (
+          <Header />
+        ) : (
+          // show={show}
+          // handleShow={handleShow}
+          // handleHide={handleHide}
+          // reset={reset}
+
+          ""
+        )}
+        <CssBaseline />
+        <Container maxWidth="sm">
+          <Box>
+            <Routes>
+              {accessToken ? (
+                <>
+                  <Route
+                    path="/"
+                    element={
+                      <Main
+                        deleteImgHandle={deleteImgHandle}
+                        changeSearch={changeSearch}
+                        handleSearch={handleSearch}
+                        search={search}
+                        dateChange={dateChange}
+                      />
+                    }
+                  ></Route>
+                  <Route
+                    path="/add"
+                    element={
+                      <Add
+                        handleChange={handleChange}
+                        onImageChange={onImageChange}
+                        handleSubmit={handleSubmit}
+                        fileInput={fileInput}
+                        // handleDeleteImage={handleDeleteImage}
+                        dateChange={dateChange}
+                      />
+                    }
+                  ></Route>
+                  <Route path="/list" element={<List />}></Route>
+                  <Route path="/profile" element={<Profile />}></Route>
+                  <Route path="*" element={<NotFound />}></Route>
+                </>
+              ) : (
+                <>
+                  <Route path="/" element={<SignIn />}></Route>
+                  <Route path="/signIn" element={<SignIn />}></Route>
+                  <Route path="/signUp" element={<SignUp />}></Route>
+                </>
+              )}
+            </Routes>
+          </Box>
+        </Container>
+
+        {accessToken ? <Footer /> : ""}
+
+        {loading ? <Loading /> : null}
+        <MyModal
+          // open={open}
+          onSubmit={handleModalSubmit}
+          onRequestClose={handleRequestCancel}
         />
-      ) : (
-        ""
-      )}
-
-      <Container style={{ paddingBottom: "80px", overflow: "hidden" }}>
-        {/* <TransitionGroup>
-          <CSSTransition
-            key={location.key}
-            {...slideTransition}
-            mountOnEnter={false}
-            unmountOnExit={true}
-          > */}
-        <Routes>
-          {accessToken ? (
-            <>
-              <Route
-                path="/"
-                element={
-                  <Main
-                    deleteImgHandle={deleteImgHandle}
-                    changeSearch={changeSearch}
-                    handleSearch={handleSearch}
-                    search={search}
-                    dateChange={dateChange}
-                  />
-                }
-              ></Route>
-              <Route
-                path="/add"
-                element={
-                  <Add
-                    handleChange={handleChange}
-                    onImageChange={onImageChange}
-                    handleSubmit={handleSubmit}
-                    fileInput={fileInput}
-                    // handleDeleteImage={handleDeleteImage}
-                    dateChange={dateChange}
-                  />
-                }
-              ></Route>
-              <Route path="/list" element={<List />}></Route>
-              <Route path="/profile" element={<Profile />}></Route>
-              <Route path="*" element={<NotFound />}></Route>
-            </>
-          ) : (
-            <>
-              <Route path="/" element={<SignIn />}></Route>
-              <Route path="/signIn" element={<SignIn />}></Route>
-              <Route path="/signUp" element={<SignUp />}></Route>
-            </>
-          )}
-        </Routes>
-        {/* </CSSTransition>
-        </TransitionGroup> */}
-      </Container>
-      {accessToken ? <Footer /> : ""}
-
-      {loading ? <Loading /> : null}
-      <MyModal
-        isOpen={isOpen}
-        onSubmit={handleModalSubmit}
-        onRequestClose={handleRequestCancel}
-      />
+      </ThemeProvider>
     </>
   );
 }
