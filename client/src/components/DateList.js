@@ -46,22 +46,13 @@ function DateList(props) {
                         href={`${data.idx}`}
                         onClick={(e) => e.preventDefault()}
                       >
-                        {data.image.split(".")[1] === "mp4" ? (
-                          <video
-                            // src={require(`../../public/upload/${data.image}`)}
-                            src={`http://3.34.46.36:8000/upload/${data.image}`}
-                            loop
-                            controls
-                            style={{ width: "100%" }}
-                          />
-                        ) : (
-                          <img
-                            className="d-block w-100"
-                            // src={require(`../../public/upload/${data.image}`)}
-                            src={`http://3.34.46.36:8000/upload/${data.image}`}
-                            alt="First slide"
-                          />
-                        )}
+                        <img
+                          className="d-block w-100"
+                          // src={require(`../../public/upload/${data.image}`)}
+                          src={`http://3.34.46.36:8000/upload/${data.image}`}
+                          alt="First slide"
+                        />
+
                         <div className="carousel-caption">
                           <h3>{data.title}</h3>
                           <p>{data.description}</p>

@@ -11,19 +11,33 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { makeStyles } from "@mui/styles";
+import { useDispatch, useSelector } from "react-redux";
+
+import { setFooterNavState } from "../store/store.js";
 
 function Footer() {
-  const [value, setValue] = useState("home");
+  const { footerNavState } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    dispatch(setFooterNavState(newValue));
   };
+
+  const useStyles = makeStyles(() => ({
+    footer: {
+      zIndex: 9999,
+    },
+  }));
+
+  const classes = useStyles();
 
   return (
     <BottomNavigation
       variant="bottomNavi"
-      value={value}
+      value={footerNavState}
       onChange={handleChange}
+      className={classes.footer}
     >
       <BottomNavigationAction
         label="Home"

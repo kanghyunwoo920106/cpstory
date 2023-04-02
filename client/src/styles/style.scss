@@ -3,6 +3,7 @@
 
 .calendar {
     @include common.size(100%, 100%);
+    margin: 15px 0;
     .header {
         @include common.size(100%, 7%);
         @include common.flex-row(space-between, baseline);
@@ -24,7 +25,7 @@
             @include common.size(20%, 100%);
             @include common.flex-row(flex-end, baseline);
             svg {
-                @include common.size(11%, fit-content);
+                // @include common.size(11%, fit-content);
                 margin-left: 5%;
                 color: transparentize(gray, 0.2);
                 &:hover {

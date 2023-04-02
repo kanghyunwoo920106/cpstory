@@ -34,6 +34,7 @@ import {
   setDiaryData,
   setAuthenticated,
   setUserData,
+  setFooterNavState,
 } from "./store/store.js";
 import Loading from "./components/Loading";
 import SignIn from "./page/SignIn";
@@ -91,6 +92,7 @@ function App() {
     postCheck,
     authenticated,
     userData,
+    footerNavState,
   } = useSelector((state) => state);
 
   const getPhotoData = async () => {
@@ -246,7 +248,11 @@ function App() {
         formData.append("title", input.title);
         formData.append("description", input.description);
         formData.append("date", date);
-        formData.append("address", info.place_name);
+        if (info.place_name == undefined) {
+          formData.append("address", info.content);
+        } else {
+          formData.append("address", info.place_name);
+        }
 
         for (let i = 0; i < image.length; i++) {
           formData.append("image", image[i]);
@@ -306,6 +312,8 @@ function App() {
           );
           dispatch(setInputSearch(""));
           search.current.value = "";
+          navigate("/");
+          dispatch(setFooterNavState("home"));
         } else {
           dispatch(setDatas(result.data.data));
           dispatch(setInputSearch(""));
@@ -318,6 +326,8 @@ function App() {
             })
           );
           getPhotoData();
+          navigate("/");
+          dispatch(setFooterNavState("home"));
         }
       })
       .catch((error) => {
@@ -329,7 +339,11 @@ function App() {
     <>
       <ThemeProvider theme={darkTheme}>
         {accessToken ? (
-          <Header />
+          <Header
+            changeSearch={changeSearch}
+            handleSearch={handleSearch}
+            search={search}
+          />
         ) : (
           // show={show}
           // handleShow={handleShow}

@@ -5,32 +5,48 @@ import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns";
 import { isSameMonth, isSameDay, addDays, parseISO } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "./Modal.js";
-import { setModalOpen, setDiaryKey } from "../store/store.js";
+import { setModalOpen, setDiaryKey, setOpen } from "../store/store.js";
+import IconButton from "@mui/material/IconButton";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import Stack from "@mui/material/Stack";
 
 const RenderHeader = ({ currentMonth, prevMonth, nextMonth }) => {
   return (
     <div className="header row">
-      <div className="col col-start">
+      <Stack direction="row" spacing={1}>
         <span className="text">
           <span className="text month">{format(currentMonth, "M")}월</span>
           {format(currentMonth, "yyyy")}
         </span>
-      </div>
-      <div className="col col-end">
-        <Icon icon="bi:arrow-left-circle-fill" onClick={prevMonth} />
-        <Icon icon="bi:arrow-right-circle-fill" onClick={nextMonth} />
-      </div>
+        <div className="col col-end">
+          <IconButton
+            color="primary"
+            aria-label="add to shopping cart"
+            onClick={prevMonth}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+          <IconButton
+            color="primary"
+            aria-label="add to shopping cart"
+            onClick={nextMonth}
+          >
+            <ChevronRightIcon />
+          </IconButton>
+        </div>
+      </Stack>
     </div>
   );
 };
 
 const RenderDays = () => {
   const days = [];
-  const date = ["Sun", "Mon", "Thu", "Wed", "Thrs", "Fri", "Sat"];
+  const date = ["일", "월", "화", "수", "목", "금", "토"];
 
   for (let i = 0; i < 7; i++) {
     days.push(
-      <div className="col" key={i}>
+      <div className="col" key={i} style={{ backgroundColor: "#121212" }}>
         {date[i]}
       </div>
     );
@@ -109,7 +125,7 @@ const RenderCells = ({ currentMonth, selectedDate, onDateClick }) => {
 export const Calender = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const { modalOpen, diaryKey } = useSelector((state) => state);
+  const { modalOpen, diaryKey, open } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   const openModal = () => {
@@ -132,7 +148,6 @@ export const Calender = () => {
 
   return (
     <div className="calendar main-box">
-      <h1 className="form-label">한줄 메모장</h1>
       <RenderHeader
         currentMonth={currentMonth}
         prevMonth={prevMonth}

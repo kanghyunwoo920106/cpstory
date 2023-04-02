@@ -18,6 +18,7 @@ function Search(props) {
           display: "flex",
           alignItems: "center",
           width: "100%",
+          borderRadius: "20px",
         }}
       >
         <InputBase

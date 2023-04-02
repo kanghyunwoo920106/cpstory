@@ -1,6 +1,6 @@
 /*global kakao*/
 import React, { useEffect, useState, useRef } from "react";
-// import { Button, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,13 +11,14 @@ import {
   setPopShow,
 } from "../store/store.js";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-// import Popover from "react-bootstrap/Popover";
+import Popover from "react-bootstrap/Popover";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import Popover from "@mui/material/Popover";
+// import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { makeStyles } from "@mui/styles";
 
 function KaKaoMap() {
   const { kakao } = window;
@@ -28,6 +29,23 @@ function KaKaoMap() {
   const dispatch = useDispatch();
   const search = useRef(null);
   const placename = useRef(null);
+
+  const useStyles = makeStyles(() => ({
+    form: {
+      paddingBottom: "100px",
+    },
+    uploadButton: {
+      width: "100% !important",
+    },
+    box: {
+      margin: "15px 0",
+    },
+    popper: {
+      padding: "0",
+    },
+  }));
+
+  const classes = useStyles();
 
   useEffect(() => {
     if (!map) return;
@@ -72,41 +90,17 @@ function KaKaoMap() {
 
   const mapChange = (e) => {
     dispatch(setSearchMap(e.target.value));
-
-    if (search.current.value === "") {
-      setAnchorEl(null); // 팝업을 닫음
-      setPopShow(false);
+    if (search.current.value == "") {
+      dispatch(setPopShow(false));
     } else {
-      setAnchorEl(search.current); // 검색 필드를 기준으로 팝업 위치를 설정
-      setPopShow(true);
+      dispatch(setPopShow(true));
     }
   };
 
-  return (
-    <>
-      <Box sx={{ maxWidth: "100%" }} mt={2}>
-        <TextField
-          fullWidth
-          label="장소검색"
-          id="fullWidth"
-          onChange={mapChange}
-          ref={search}
-          aria-describedby={id}
-        />
-      </Box>
-
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        variant="popover"
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-      >
-        {/* <Typography sx={{ p: 2 }}> */}
+  const popover = (
+    <Popover id="popover-basic">
+      {/* <Popover.Header as="h3">검색추천장소</Popover.Header> */}
+      <Popover.Body className={classes.popper}>
         {address.map((data, index) => {
           return (
             <ul className="address-list-wrap" key={index}>
@@ -127,8 +121,31 @@ function KaKaoMap() {
             </ul>
           );
         })}
-        {/* </Typography> */}
-      </Popover>
+      </Popover.Body>
+    </Popover>
+  );
+
+  return (
+    <>
+      <Form.Group>
+        <OverlayTrigger
+          show={popShow}
+          trigger="click"
+          placement="bottom-start"
+          overlay={popover}
+        >
+          <TextField
+            fullWidth
+            label="장소검색"
+            id="fullWidth"
+            onChange={mapChange}
+            inputRef={search}
+            aria-describedby={id}
+            className={classes.box}
+            defaultValue={info.place_name}
+          />
+        </OverlayTrigger>
+      </Form.Group>
       <Map
         center={{
           lat: 37.566826,
@@ -138,6 +155,7 @@ function KaKaoMap() {
           width: "100%",
           height: "350px",
           zIndex: 0,
+          margin: "15px 0",
         }}
         level={6}
         onCreate={setMap}
@@ -161,12 +179,20 @@ function KaKaoMap() {
             }}
             onClick={(e) => {
               dispatch(setInfo(marker));
+              console.log(marker);
+              search.current.value = marker.content;
             }}
           >
             {info && info.content === marker.content && (
               <div
                 className="qweqwe"
-                style={{ color: "#fff", backgroundColor: "#f93737" }}
+                style={{
+                  color: "#000",
+                  backgroundColor: "#90caf9",
+                  borderRadius: "15px",
+                  fontSize: "0.9rem",
+                  padding: "10px 25px",
+                }}
               >
                 {marker.content}
               </div>

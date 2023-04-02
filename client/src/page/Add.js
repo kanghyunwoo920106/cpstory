@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -16,7 +15,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { FilledInput } from "@mui/material";
 import { Fab } from "@mui/material";
+import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
+import { makeStyles } from "@mui/styles";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function Add(props) {
   const { input, date, showImages } = useSelector((state) => state);
@@ -24,33 +27,32 @@ function Add(props) {
   let { handleChange, onImageChange, handleSubmit, fileInput, dateChange } =
     props;
 
-  const theme = createTheme({
-    components: {
-      Box: {
-        variants: [
-          {
-            props: { variant: "box" },
-            style: {
-              margin: "15px",
-            },
-          },
-        ],
-      },
+  const useStyles = makeStyles(() => ({
+    form: {
+      paddingBottom: "100px",
     },
-  });
+    uploadButton: {
+      width: "100% !important",
+    },
+    box: {
+      margin: "15px 0",
+    },
+  }));
+
+  const classes = useStyles();
 
   return (
     <Form
       method="POST"
       onSubmit={handleSubmit}
       encType="multipart/form-data"
-      className="mt-3"
+      className={classes.form}
     >
       <Box
         sx={{
           maxWidth: "100%",
         }}
-        mt={2}
+        className={classes.box}
       >
         <TextField
           fullWidth
@@ -65,7 +67,7 @@ function Add(props) {
         sx={{
           maxWidth: "100%",
         }}
-        mt={2}
+        className={classes.box}
       >
         <TextField
           fullWidth
@@ -82,7 +84,7 @@ function Add(props) {
         sx={{
           maxWidth: "100%",
         }}
-        mt={2}
+        className={classes.box}
       >
         <KaKaoMap />
       </Box>
@@ -90,7 +92,7 @@ function Add(props) {
         sx={{
           maxWidth: "100%",
         }}
-        mt={2}
+        className={classes.box}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer components={["DateCalendar"]}>
@@ -104,9 +106,9 @@ function Add(props) {
         sx={{
           maxWidth: "100%",
         }}
-        mt={2}
+        className={classes.box}
       >
-        <label htmlFor="upload-photo">
+        <label htmlFor="upload-photo" className={classes.uploadButton}>
           <input
             style={{ display: "none" }}
             id="upload-photo"
@@ -116,29 +118,37 @@ function Add(props) {
             ref={fileInput}
             multiple
           />
-
           <Fab
             color="primary"
             size="small"
             component="span"
             aria-label="add"
             variant="extended"
+            className={classes.uploadButton}
           >
             <AddIcon /> Upload photo
           </Fab>
         </label>
       </Box>
 
-      <div>
+      <Box>
         {showImages.map((image, id) => (
           <div key={id} className="previewImg-wrap">
             <img src={image} alt={`${image}-${id}`} />
           </div>
         ))}
-      </div>
+      </Box>
 
-      <Button type="submit" className="add-submit-btn mt-3">
-        글등록
+      <Button
+        variant="outlined"
+        type="submit"
+        fullWidth
+        startIcon={<SaveIcon />}
+        sx={{
+          borderRadius: "20px",
+        }}
+      >
+        등록
       </Button>
     </Form>
   );

@@ -149,6 +149,7 @@
 // Search
 .search-wraper {
     margin: 15px 0;
+    width: 100%;
 }
 
 // Add
@@ -290,15 +291,17 @@
   
 // Popover 
 .popover {
-    height: 250px;
+    height: 370px;
     overflow-y: scroll;
     width: 94%;
     max-width: 100%;
+    border: 1px solid #3e3e3e;
 }
 
 .address-list-wrap {
-    border-bottom: 1px solid #ccc;
     padding: 15px;
+    background-color: #252323;
+    color: #fff;
 
     li:nth-child(1) {
         font-weight: bold;

@@ -11,20 +11,10 @@ function List(props) {
         datas.map((data, index) => {
           return (
             <Row key={data.idx}>
-              {data.image.split(".")[1] == "mp4" ? (
-                <video
-                  // src={require(`../../public/upload/${data.image}`)}
-                  src={`http://3.34.46.36:8000/upload/${data.image}`}
-                  loop
-                  controls
-                  style={{ width: "100%" }}
-                />
-              ) : (
-                <img
-                  // src={require(`../../public/upload/${data.image}`)}
-                  src={`http://3.34.46.36:8000/upload/${data.image}`}
-                />
-              )}
+              <img
+                // src={require(`../../public/upload/${data.image}`)}
+                src={`http://3.34.46.36:8000/upload/${data.image}`}
+              />
             </Row>
           );
         })

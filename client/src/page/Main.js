@@ -12,11 +12,11 @@ function Main(props) {
       {datas.length !== 0 ? (
         <>
           <MainSlide deleteImgHandle={deleteImgHandle} />
-          <Search
+          {/* <Search
             changeSearch={changeSearch}
             handleSearch={handleSearch}
             search={search}
-          />
+          /> */}
           <Calender />
         </>
       ) : (

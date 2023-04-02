@@ -24,6 +24,7 @@ const initialState = {
   diaryKey: 0,
   memberInfo: { id: "" },
   userData: { firstName: "", lastName: "", id: "", password: "" },
+  footerNavState: "home",
 };
 // 액션 타입 정의
 const SET_DATAS = "SET_DATAS";
@@ -47,6 +48,7 @@ const SET_MODALOPEN = "SET_MODALOPEN";
 const SET_DIARYKEY = "SET_DIARYKEY";
 const SET_MEMBERINFO = "SET_MEMBERINFO";
 const SET_USERDATA = "SET_USERDATA";
+const SET_FOOTERNAVSTATE = "SET_FOOTERNAVSTATE";
 
 // 액션 생성 함수 정의
 export const setDatas = (datas) => ({
@@ -153,6 +155,11 @@ export const setMemberInfo = (memberInfo) => ({
 export const setUserData = (userData) => ({
   type: SET_USERDATA,
   userData,
+});
+
+export const setFooterNavState = (footerNavState) => ({
+  type: SET_FOOTERNAVSTATE,
+  footerNavState,
 });
 
 // 리듀서 함수 정의
@@ -262,6 +269,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         userData: action.userData,
+      };
+
+    case SET_FOOTERNAVSTATE:
+      return {
+        ...state,
+        footerNavState: action.footerNavState,
       };
 
     default:

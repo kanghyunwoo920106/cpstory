@@ -6,6 +6,7 @@ import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
 import { makeStyles } from "@mui/styles";
 import { Paper, Box } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -20,6 +21,7 @@ const useStyles = makeStyles(() => ({
     display: "block",
     maxWidth: "100%",
     width: "auto",
+    borderRadius: "10px",
   },
   nav: {
     position: "absolute",
@@ -59,7 +61,6 @@ const MainSlide = (props) => {
   const [activeStep, setActiveStep] = useState(0);
   const { datas } = useSelector((state) => state);
   let { deleteImgHandle } = props;
-  console.log(datas);
 
   const handleStepChange = (step) => {
     setActiveStep(step);
@@ -69,13 +70,22 @@ const MainSlide = (props) => {
     <Box className={classes.root}>
       <SwipeableViews index={activeStep} onChangeIndex={handleStepChange}>
         {datas.map((data, index) => (
-          <Paper key={data.idx} elevation={0}>
+          <Paper key={data.idx} elevation={0} sx={{ position: "relative" }}>
+            <ClearIcon
+              onClick={() => deleteImgHandle(data.idx)}
+              sx={{
+                position: "absolute",
+                right: "2%",
+                top: "2%",
+              }}
+            />
             <img
-              className="d-block w-100"
+              className={`${classes.img} d-block w-100`}
               // src={require(`../../public/upload/${data.image}`)}
               src={`http://3.34.46.36:8000/upload/${data.image}`}
               alt="First slide"
             />
+
             <div key={data.idx} className={classes.box}>
               <h3>{data.title}</h3>
               <p>{data.description}</p>
