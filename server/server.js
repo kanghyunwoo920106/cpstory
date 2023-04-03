@@ -25,6 +25,18 @@ app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "/build/index.html"));
 });
 
+app.get("/add", (req, res) => {
+  res.sendFile(path.join(__dirname, "/build/index.html"));
+});
+
+app.get("/list", (req, res) => {
+  res.sendFile(path.join(__dirname, "/build/index.html"));
+});
+
+app.get("/datelist", (req, res) => {
+  res.sendFile(path.join(__dirname, "/build/index.html"));
+});
+
 app.post("/api/insert/signup", (req, res) => {
   try {
     const { firstName, lastName, id, password } = req.body;
