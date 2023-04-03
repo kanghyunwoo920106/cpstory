@@ -12,12 +12,8 @@ import {
 } from "../store/store.js";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
-import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-// import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 
 function KaKaoMap() {
@@ -99,7 +95,6 @@ function KaKaoMap() {
 
   const popover = (
     <Popover id="popover-basic">
-      {/* <Popover.Header as="h3">검색추천장소</Popover.Header> */}
       <Popover.Body className={classes.popper}>
         {address.map((data, index) => {
           return (
@@ -164,8 +159,9 @@ function KaKaoMap() {
           <MapMarker
             key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
             position={marker.position}
+            style={{ backgroundColor: "#ff0000" }}
             image={{
-              src: "https://xkaizew.hgodo.com/uploads/marker.jpg", // 마커이미지의 주소입니다
+              src: "https://xkaizew.hgodo.com/uploads/marker.png", // 마커이미지의 주소입니다
               size: {
                 width: 24,
                 height: 30,
@@ -185,7 +181,6 @@ function KaKaoMap() {
           >
             {info && info.content === marker.content && (
               <div
-                className="qweqwe"
                 style={{
                   color: "#000",
                   backgroundColor: "#90caf9",

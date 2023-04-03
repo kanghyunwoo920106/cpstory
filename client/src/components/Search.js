@@ -26,7 +26,7 @@ function Search(props) {
           placeholder="검색"
           inputProps={{ "aria-label": "검색" }}
           onChange={changeSearch}
-          ref={search}
+          inputRef={search}
         />
         <IconButton
           type="button"

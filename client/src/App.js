@@ -1,15 +1,15 @@
 import "bootstrap/dist/css/bootstrap.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Header from "./page/Header";
 import List from "./page/List";
 import Add from "./page/Add";
 import Main from "./page/Main";
-import Profile from "./page/Profile";
 import Footer from "./page/Footer";
+import DateList from "./page/DateList";
 import axios from "axios";
 import MyModal from "./components/MyModal";
 import NotFound from "./components/NotFound";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector, connect } from "react-redux";
 import { GetPhotoData } from "./components/GetPhotoData";
 import { GetDiaryData } from "./components/GetDiaryData.js";
@@ -31,9 +31,6 @@ import {
   setDate,
   setSearchMap,
   setLoading,
-  setDiaryData,
-  setAuthenticated,
-  setUserData,
   setFooterNavState,
 } from "./store/store.js";
 import Loading from "./components/Loading";
@@ -75,24 +72,17 @@ function App() {
   const search = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const locate = useLocation();
   const accessToken = localStorage.getItem("access_token");
   const {
-    datas,
     input,
     image,
     showImages,
-    isOpen,
-    show,
     inputSearch,
     date,
     searchMap,
     info,
     loading,
-    open,
-    postCheck,
-    authenticated,
-    userData,
-    footerNavState,
   } = useSelector((state) => state);
 
   const getPhotoData = async () => {
@@ -111,6 +101,11 @@ function App() {
   // 한줄 메모장 fetch
   useEffect(() => {
     getDiaryData();
+  }, []);
+
+  useEffect(() => {
+    const locateValue = locate.pathname.split("/")[1];
+    dispatch(setFooterNavState(locateValue));
   }, []);
 
   // useEffect(() => {
@@ -146,6 +141,8 @@ function App() {
           dispatch(setInput({ title: "", description: "" }));
           dispatch(setSearchMap(""));
           getPhotoData();
+          navigate("/");
+          dispatch(setFooterNavState("home"));
         })
         .catch((error) => {
           console.log(error);
@@ -164,15 +161,6 @@ function App() {
     dispatch(setOpen(false));
   };
 
-  const handleShow = () => {
-    dispatch(setShow(true));
-  };
-
-  const handleHide = () => {
-    dispatch(setShow(false));
-  };
-
-  // console.log(date);
   const dateChange = (selectedDate) => {
     const formattedDate = format(selectedDate.$d, "yyyy-MM-dd");
     dispatch(setDate(formattedDate));
@@ -291,7 +279,6 @@ function App() {
   };
 
   const changeSearch = (e) => {
-    console.log(e.target.value);
     dispatch(setInputSearch(e.target.value));
   };
 
@@ -306,7 +293,7 @@ function App() {
           dispatch(setOpen(true));
           dispatch(
             setPostCheck({
-              message: `${inputSearch} 찾으시는 추억이 없습니다`,
+              message: `찾으시는 추억이 없습니다`,
               url: "",
             })
           );
@@ -321,11 +308,10 @@ function App() {
           dispatch(setOpen(true));
           dispatch(
             setPostCheck({
-              message: `${inputSearch} 추억이 검색되었습니다`,
+              message: `${result.data.data.length}건의 추억이 검색되었습니다`,
               url: "",
             })
           );
-          getPhotoData();
           navigate("/");
           dispatch(setFooterNavState("home"));
         }
@@ -343,17 +329,13 @@ function App() {
             changeSearch={changeSearch}
             handleSearch={handleSearch}
             search={search}
+            reset={reset}
           />
         ) : (
-          // show={show}
-          // handleShow={handleShow}
-          // handleHide={handleHide}
-          // reset={reset}
-
           ""
         )}
         <CssBaseline />
-        <Container maxWidth="sm">
+        <Container maxWidth="sm" style={{ paddingBottom: "80px" }}>
           <Box>
             <Routes>
               {accessToken ? (
@@ -363,9 +345,6 @@ function App() {
                     element={
                       <Main
                         deleteImgHandle={deleteImgHandle}
-                        changeSearch={changeSearch}
-                        handleSearch={handleSearch}
-                        search={search}
                         dateChange={dateChange}
                       />
                     }
@@ -378,13 +357,12 @@ function App() {
                         onImageChange={onImageChange}
                         handleSubmit={handleSubmit}
                         fileInput={fileInput}
-                        // handleDeleteImage={handleDeleteImage}
                         dateChange={dateChange}
                       />
                     }
                   ></Route>
                   <Route path="/list" element={<List />}></Route>
-                  <Route path="/profile" element={<Profile />}></Route>
+                  <Route path="/datelist" element={<DateList />}></Route>
                   <Route path="*" element={<NotFound />}></Route>
                 </>
               ) : (
@@ -402,7 +380,6 @@ function App() {
 
         {loading ? <Loading /> : null}
         <MyModal
-          // open={open}
           onSubmit={handleModalSubmit}
           onRequestClose={handleRequestCancel}
         />

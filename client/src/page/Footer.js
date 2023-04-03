@@ -1,16 +1,11 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import FolderIcon from "@mui/icons-material/Folder";
-import RestoreIcon from "@mui/icons-material/Restore";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import { makeStyles } from "@mui/styles";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -19,6 +14,7 @@ import { setFooterNavState } from "../store/store.js";
 function Footer() {
   const { footerNavState } = useSelector((state) => state);
   const dispatch = useDispatch();
+  const locate = useLocation();
 
   const handleChange = (event, newValue) => {
     dispatch(setFooterNavState(newValue));
@@ -61,10 +57,10 @@ function Footer() {
         icon={<AddBoxOutlinedIcon />}
       />
       <BottomNavigationAction
-        label="Folder"
-        value="folder"
+        label="DateList"
+        value="datelist"
         component={Link}
-        to="/profile"
+        to="/datelist"
         icon={<FolderIcon />}
       />
     </BottomNavigation>

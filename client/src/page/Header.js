@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { styled, alpha } from "@mui/material/styles";
+import React from "react";
+import { styled } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -11,30 +11,16 @@ import Search from "../components/Search";
 
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { useDispatch, useSelector } from "react-redux";
+import { setShow } from "../store/store.js";
 
-// const Search = styled("div")(({ theme }) => ({
-//   position: "relative",
-//   borderRadius: theme.shape.borderRadius,
-//   backgroundColor: alpha(theme.palette.common.white, 0.15),
-//   "&:hover": {
-//     backgroundColor: alpha(theme.palette.common.white, 0.25),
-//   },
-//   marginLeft: 0,
-//   width: "100%",
-//   [theme.breakpoints.up("sm")]: {
-//     marginLeft: theme.spacing(1),
-//     width: "auto",
-//   },
-// }));
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
   height: "100%",
@@ -63,38 +49,18 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Header(props) {
-  const { changeSearch, handleSearch, search } = props;
-  const [state, setState] = useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
-
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
-  };
+  const { changeSearch, handleSearch, search, reset } = props;
+  const { show } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   const list = (anchor) => (
-    <Box
-      sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 250 }}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
+    <Box sx={{ width: 250 }} role="presentation" onClick={reset}>
       <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+        {["초기화"].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton>
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <RestartAltIcon />
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItemButton>
@@ -102,18 +68,6 @@ export default function Header(props) {
         ))}
       </List>
       <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
     </Box>
   );
 
@@ -127,6 +81,7 @@ export default function Header(props) {
             color="inherit"
             aria-label="open drawer"
             sx={{ mr: 2 }}
+            onClick={() => dispatch(setShow(true))}
           >
             <MenuIcon />
           </IconButton>
@@ -142,31 +97,18 @@ export default function Header(props) {
             changeSearch={changeSearch}
             handleSearch={handleSearch}
             search={search}
-          >
-            <SearchIconWrapper onClick={handleSearch}>
-              <SearchIcon></SearchIcon>
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="검색"
-              inputProps={{ "aria-label": "검색" }}
-              onChange={changeSearch}
-              ref={search}
-            />
-          </Search>
+          ></Search>
         </Toolbar>
       </AppBar>
-      {["left", "right", "top", "bottom"].map((anchor) => (
-        <React.Fragment key={anchor}>
-          <Button onClick={toggleDrawer(anchor, true)}>{anchor}</Button>
-          <Drawer
-            anchor={anchor}
-            open={state[anchor]}
-            onClose={toggleDrawer(anchor, false)}
-          >
-            {list(anchor)}
-          </Drawer>
-        </React.Fragment>
-      ))}
+      <div>
+        <Drawer
+          anchor="left"
+          open={show}
+          onClose={() => dispatch(setShow(false))}
+        >
+          {list("left")}
+        </Drawer>
+      </div>
     </Box>
   );
 }

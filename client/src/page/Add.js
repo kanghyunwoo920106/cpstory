@@ -1,8 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
-import { DateRange } from "react-date-range";
-import "react-date-range/dist/styles.css";
-import "react-date-range/dist/theme/default.css";
 import { useSelector, useDispatch } from "react-redux";
 import KaKaoMap from "../components/KaKaoMap";
 import Box from "@mui/material/Box";

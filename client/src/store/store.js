@@ -24,7 +24,7 @@ const initialState = {
   diaryKey: 0,
   memberInfo: { id: "" },
   userData: { firstName: "", lastName: "", id: "", password: "" },
-  footerNavState: "home",
+  footerNavState: "",
 };
 // 액션 타입 정의
 const SET_DATAS = "SET_DATAS";

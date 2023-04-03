@@ -21,6 +21,10 @@ app.get("/", function (req, res, next) {
   res.send({ message: "ok" });
 });
 
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/build/index.html"));
+});
+
 app.post("/api/insert/signup", (req, res) => {
   try {
     const { firstName, lastName, id, password } = req.body;
