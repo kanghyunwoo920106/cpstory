@@ -21,10 +21,6 @@ app.get("/", function (req, res, next) {
   res.send({ message: "ok" });
 });
 
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/build/index.html"));
-});
-
 app.get("/add", (req, res) => {
   res.sendFile(path.join(__dirname, "/build/index.html"));
 });
