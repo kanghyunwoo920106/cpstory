@@ -12,8 +12,8 @@ function List(props) {
           return (
             <Row key={data.idx}>
               <img
-                // src={require(`../../public/upload/${data.image}`)}
-                src={`http://3.34.46.36:8000/upload/${data.image}`}
+                src={require(`../../public/upload/${data.image}`)}
+                // src={`http://3.34.46.36:8000/upload/${data.image}`}
               />
             </Row>
           );

@@ -122,8 +122,8 @@ export default function DateList() {
                 >
                   <img
                     className={`${classes.img} d-block w-100`}
-                    // src={require(`../../public/upload/${data.image}`)}
-                    src={`http://3.34.46.36:8000/upload/${data.image}`}
+                    src={require(`../../public/upload/${data.image}`)}
+                    // src={`http://3.34.46.36:8000/upload/${data.image}`}
                     alt="First slide"
                   />
 

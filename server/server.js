@@ -14,11 +14,11 @@ app.use(cookieParser());
 const jwt = require("jsonwebtoken");
 const secretKey = "mysecretkey";
 
-app.use(express.static(path.join(__dirname, "/build")));
+// app.use(express.static(path.join(__dirname, "/build")));
 
 app.get("/", function (req, res, next) {
   // res.sendFile(path.join(__dirname, "/build/index.html"));
-  res.send({ message: "ok" });
+  res.send({ message: "server on" });
 });
 
 app.get("/add", (req, res) => {
@@ -135,9 +135,9 @@ app.get("/api/get/photodata", function (req, res) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // cb(null, "../client/public/upload");
+    cb(null, "../client/public/upload");
 
-    cb(null, "./build/upload/"); //서버
+    // cb(null, "./build/upload/"); //서버
   },
   filename: (req, file, cb) => {
     const newFileName = file.originalname;
