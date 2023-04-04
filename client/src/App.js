@@ -280,6 +280,7 @@ function App() {
 
   const changeSearch = (e) => {
     dispatch(setInputSearch(e.target.value));
+    console.log(e);
   };
 
   const handleSearch = async (e) => {
