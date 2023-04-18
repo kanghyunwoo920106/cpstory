@@ -80,8 +80,7 @@ const MainSlide = (props) => {
             />
             <img
               className={`${classes.img} d-block w-100`}
-              src={require(`../../public/upload/${data.image}`)}
-              // src={`http://3.34.46.36:8000/upload/${data.image}`}
+              src={`http://xkaizew.hgodo.com/uploads/${data.image}`}
               alt="First slide"
             />
 

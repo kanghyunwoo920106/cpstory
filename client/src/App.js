@@ -32,6 +32,7 @@ import {
   setSearchMap,
   setLoading,
   setFooterNavState,
+  setInfo,
 } from "./store/store.js";
 import Loading from "./components/Loading";
 import SignIn from "./page/SignIn";
@@ -245,7 +246,6 @@ function App() {
         for (let i = 0; i < image.length; i++) {
           formData.append("image", image[i]);
         }
-
         dispatch(setLoading(true));
         await axios
           .post("/api/insert/post", formData, {
@@ -263,11 +263,12 @@ function App() {
             dispatch(setShow(false));
             dispatch(setShowImages([]));
             dispatch(setSearchMap(""));
+            dispatch(setInfo(""));
             if (fileInput && fileInput.current) {
               fileInput.current.value = "";
             }
             getPhotoData();
-            navigate("/");
+            // navigate("/");
           })
           .catch((error) => {
             console.error(error);
@@ -280,7 +281,6 @@ function App() {
 
   const changeSearch = (e) => {
     dispatch(setInputSearch(e.target.value));
-    console.log(e);
   };
 
   const handleSearch = async (e) => {

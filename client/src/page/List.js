@@ -11,10 +11,7 @@ function List(props) {
         datas.map((data, index) => {
           return (
             <Row key={data.idx}>
-              <img
-                src={require(`../../public/upload/${data.image}`)}
-                // src={`http://3.34.46.36:8000/upload/${data.image}`}
-              />
+              <img src={`http://xkaizew.hgodo.com/uploads/${data.image}`} />
             </Row>
           );
         })
