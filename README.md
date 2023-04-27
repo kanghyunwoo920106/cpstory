@@ -11,3 +11,5 @@ avatar: [
   "개인 다이어리 data-fns를 이용하여 등록,수정,삭제 기능 구현",
   "카카오맵 api를 사용해 포스트 등록때 장소검색 기능 개발",
 ],
+
+url: http://hyunwooport.cafe24app.com/
