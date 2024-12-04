@@ -10,6 +10,4 @@ avatar: [
   "게시글등록 formdata를 이용하여 개인 api 서버에 axios로 데이터요청하여 받은 데이터 바인딩",
   "개인 다이어리 data-fns를 이용하여 등록,수정,삭제 기능 구현",
   "카카오맵 api를 사용해 포스트 등록때 장소검색 기능 개발",
-],
-
-url: http://hyunwooport.cafe24app.com/
+]
